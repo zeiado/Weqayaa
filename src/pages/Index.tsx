@@ -1,14 +1,41 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { HeroSection } from "@/components/HeroSection";
+import { OnboardingFlow } from "@/components/OnboardingFlow";
+import { Dashboard } from "@/components/Dashboard";
+
+type AppState = "landing" | "onboarding" | "dashboard";
+
+interface UserData {
+  name: string;
+  age: string;
+  gender: string;
+  university: string;
+  goal: string;
+  activityLevel: string;
+  budget: string;
+}
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [currentState, setCurrentState] = useState<AppState>("landing");
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  const handleOnboardingComplete = (data: UserData) => {
+    setUserData(data);
+    setCurrentState("dashboard");
+  };
+
+  const startOnboarding = () => {
+    setCurrentState("onboarding");
+  };
+
+  switch (currentState) {
+    case "onboarding":
+      return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+    case "dashboard":
+      return <Dashboard userName={userData?.name} />;
+    default:
+      return <HeroSection onStartOnboarding={startOnboarding} />;
+  }
 };
 
 export default Index;

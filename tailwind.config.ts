@@ -13,7 +13,14 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        cairo: ['Cairo', 'system-ui', 'sans-serif'],
+        arabic: ['Cairo', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
+      },
       colors: {
+        "primary-glow": "hsl(var(--primary-glow))",
+        "secondary-glow": "hsl(var(--secondary-glow))",
+        "accent-glow": "hsl(var(--accent-glow))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
