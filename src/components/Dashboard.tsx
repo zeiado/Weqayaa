@@ -15,10 +15,17 @@ import {
   Plus,
   Activity,
   Zap,
-  Clock
+  Clock,
+  ArrowLeft
 } from "lucide-react";
 
-export const Dashboard = ({ userName = "أحمد" }: { userName?: string }) => {
+export const Dashboard = ({ 
+  userName = "أحمد", 
+  onBack 
+}: { 
+  userName?: string;
+  onBack: () => void;
+}) => {
   const [showChat, setShowChat] = useState(false);
 
   if (showChat) {
@@ -64,6 +71,14 @@ export const Dashboard = ({ userName = "أحمد" }: { userName?: string }) => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                onClick={onBack}
+                className="flex items-center gap-2 text-muted-foreground"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                الرئيسية
+              </Button>
               <WeqayaLogo size="sm" />
               <div className="text-right">
                 <h1 className="font-semibold text-foreground">أهلاً {userName}</h1>

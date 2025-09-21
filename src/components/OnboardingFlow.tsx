@@ -18,7 +18,13 @@ interface OnboardingData {
   budget: string;
 }
 
-export const OnboardingFlow = ({ onComplete }: { onComplete: (data: OnboardingData) => void }) => {
+export const OnboardingFlow = ({ 
+  onComplete, 
+  onBack 
+}: { 
+  onComplete: (data: OnboardingData) => void;
+  onBack: () => void;
+}) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({
     name: "",
@@ -60,6 +66,8 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: (data: OnboardingDa
   const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+    } else {
+      onBack();
     }
   };
 
@@ -234,11 +242,10 @@ export const OnboardingFlow = ({ onComplete }: { onComplete: (data: OnboardingDa
           <Button
             variant="outline"
             onClick={prevStep}
-            disabled={currentStep === 0}
             className="flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            السابق
+            {currentStep === 0 ? "العودة للرئيسية" : "السابق"}
           </Button>
           
           <Button

@@ -4,7 +4,13 @@ import { WeqayaLogo } from "./WeqayaLogo";
 import { Users, Utensils, Brain, Star } from "lucide-react";
 import weqayaHero from "@/assets/weqaya-hero.jpg";
 
-export const HeroSection = ({ onStartOnboarding }: { onStartOnboarding?: () => void }) => {
+export const HeroSection = ({ 
+  onStartOnboarding, 
+  onLogin 
+}: { 
+  onStartOnboarding?: () => void;
+  onLogin?: () => void;
+}) => {
   return (
     <div className="min-h-screen bg-gradient-wellness relative overflow-hidden">
       {/* Background Decorations */}
@@ -18,7 +24,11 @@ export const HeroSection = ({ onStartOnboarding }: { onStartOnboarding?: () => v
         {/* Header */}
         <header className="flex justify-between items-center mb-16">
           <WeqayaLogo size="sm" />
-          <Button variant="outline" className="text-primary border-primary/30 hover:bg-primary/10">
+          <Button 
+            variant="outline" 
+            className="text-primary border-primary/30 hover:bg-primary/10"
+            onClick={onLogin}
+          >
             تسجيل الدخول
           </Button>
         </header>
