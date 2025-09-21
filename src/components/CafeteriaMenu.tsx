@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
+import { Header } from './Header';
+import { Footer } from './Footer';
 
 interface FoodItem {
   id: number;
@@ -317,24 +319,14 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-wellness py-8">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="text-primary hover:bg-primary/10"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="text-center flex-1">
-            <h1 className="text-3xl font-bold text-primary mb-2">قائمة الكافتيريا</h1>
-            <p className="text-muted-foreground">Cafeteria Menu</p>
-            <p className="text-sm text-muted-foreground mt-1">📅 19 سبتمبر، 2025</p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-wellness">
+      <Header 
+        onBack={onBack}
+        showBackButton={true}
+        title="قائمة الكافتيريا"
+      />
+      
+      <div className="container mx-auto px-4 py-6">
 
         {/* Location Selector */}
         <div className="mb-6">
@@ -559,6 +551,8 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack }) => {
           </div>
         )}
       </div>
+      
+      <Footer />
     </div>
   );
 };

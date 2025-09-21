@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WeqayaLogo } from "./WeqayaLogo";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 import { Users, Utensils, Brain, Star } from "lucide-react";
 import weqayaHero from "@/assets/weqaya-hero.jpg";
 
@@ -20,18 +22,12 @@ export const HeroSection = ({
         <div className="absolute top-1/2 left-1/2 w-60 h-60 bg-accent-glow/10 rounded-full blur-3xl"></div>
       </div>
 
+      <Header 
+        onLogin={onLogin}
+        showBackButton={false}
+      />
+      
       <div className="relative z-10 container mx-auto px-6 py-12">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-16">
-          <WeqayaLogo size="sm" />
-          <Button 
-            variant="outline" 
-            className="text-primary border-primary/30 hover:bg-primary/10"
-            onClick={onLogin}
-          >
-            تسجيل الدخول
-          </Button>
-        </header>
 
         {/* Main Hero Content */}
         <div className="text-center mb-16">
@@ -120,6 +116,8 @@ export const HeroSection = ({
           </p>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { WeqayaLogo } from "./WeqayaLogo";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 import { Send, Mic, Camera, ArrowLeft } from "lucide-react";
 
 interface Message {
@@ -74,25 +76,11 @@ export const AIChat = ({ onBack }: AIChatProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-wellness">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-border">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Button variant="ghost" onClick={onBack} className="flex items-center gap-2">
-              <ArrowLeft className="w-5 h-5" />
-              العودة
-            </Button>
-            <div className="flex items-center gap-3">
-              <WeqayaLogo size="sm" />
-              <div className="text-center">
-                <h1 className="font-semibold text-foreground">مستشار وقاية الذكي</h1>
-                <p className="text-xs text-green-600">• متاح الآن</p>
-              </div>
-            </div>
-            <div></div> {/* Spacer */}
-          </div>
-        </div>
-      </header>
+      <Header 
+        onBack={onBack}
+        showBackButton={true}
+        title="مستشار وقاية الذكي"
+      />
 
       <div className="container mx-auto px-6 py-6 h-[calc(100vh-120px)] flex flex-col">
         {/* Messages */}
@@ -164,6 +152,8 @@ export const AIChat = ({ onBack }: AIChatProps) => {
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

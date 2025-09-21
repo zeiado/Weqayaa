@@ -4,7 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WeqayaLogo } from "./WeqayaLogo";
-import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
+import { authApi, LoginRequest, RegisterRequest } from "@/services/authApi";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthProps {
   onBack: () => void;
@@ -14,17 +16,95 @@ interface AuthProps {
 export const Auth = ({ onBack, onLogin }: AuthProps) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: "",
+    firstName: "",
+    lastName: "",
     confirmPassword: ""
   });
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally handle the authentication
-    onLogin();
+    setIsLoading(true);
+
+    try {
+      if (isLogin) {
+        // Handle Login
+        const loginData: LoginRequest = {
+          email: formData.email,
+          password: formData.password
+        };
+
+        const response = await authApi.login(loginData);
+        
+        if (response.isSuccess) {
+          // Store token and user data
+          authApi.setToken(response.token);
+          localStorage.setItem('userData', JSON.stringify({
+            userId: response.userId,
+            email: response.email,
+            firstName: response.firstName,
+            lastName: response.lastName
+          }));
+
+          toast({
+            title: "تم تسجيل الدخول بنجاح",
+            description: `مرحباً ${response.firstName}!`,
+          });
+
+          onLogin();
+        } else {
+          throw new Error(response.errors?.join(', ') || 'فشل في تسجيل الدخول');
+        }
+      } else {
+        // Handle Register
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error('كلمات المرور غير متطابقة');
+        }
+
+        const registerData: RegisterRequest = {
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          firstName: formData.firstName,
+          lastName: formData.lastName
+        };
+
+        const response = await authApi.register(registerData);
+        
+        if (response.isSuccess) {
+          // Store token and user data
+          authApi.setToken(response.token);
+          localStorage.setItem('userData', JSON.stringify({
+            userId: response.userId,
+            email: response.email,
+            firstName: response.firstName,
+            lastName: response.lastName
+          }));
+
+          toast({
+            title: "تم إنشاء الحساب بنجاح",
+            description: `مرحباً ${response.firstName}! تم إنشاء حسابك بنجاح.`,
+          });
+
+          onLogin();
+        } else {
+          throw new Error(response.errors?.join(', ') || 'فشل في إنشاء الحساب');
+        }
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+      toast({
+        title: "خطأ في المصادقة",
+        description: error instanceof Error ? error.message : 'حدث خطأ غير متوقع',
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -64,19 +144,40 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
         {/* Auth Form */}
         <Card className="glass-card p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name Field (Sign Up Only) */}
+            {/* First Name Field (Sign Up Only) */}
             {!isLogin && (
               <div>
-                <Label htmlFor="name" className="text-right block mb-2">الاسم الكامل</Label>
+                <Label htmlFor="firstName" className="text-right block mb-2">الاسم الأول</Label>
                 <div className="relative">
                   <Input
-                    id="name"
+                    id="firstName"
                     type="text"
-                    placeholder="أدخل اسمك الكامل"
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="أدخل اسمك الأول"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                     className="text-right pr-10"
                     required={!isLogin}
+                    disabled={isLoading}
+                  />
+                  <User className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                </div>
+              </div>
+            )}
+
+            {/* Last Name Field (Sign Up Only) */}
+            {!isLogin && (
+              <div>
+                <Label htmlFor="lastName" className="text-right block mb-2">الاسم الأخير</Label>
+                <div className="relative">
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="أدخل اسمك الأخير"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                    className="text-right pr-10"
+                    required={!isLogin}
+                    disabled={isLoading}
                   />
                   <User className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 </div>
@@ -95,6 +196,7 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   className="text-right pr-10"
                   required
+                  disabled={isLoading}
                 />
                 <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               </div>
@@ -112,6 +214,7 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                   className="text-right pr-10 pl-10"
                   required
+                  disabled={isLoading}
                 />
                 <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Button
@@ -120,6 +223,7 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
                   size="icon"
                   className="absolute left-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
@@ -139,6 +243,7 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
                     onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                     className="text-right pr-10"
                     required={!isLogin}
+                    disabled={isLoading}
                   />
                   <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 </div>
@@ -158,8 +263,16 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
             <Button 
               type="submit" 
               className="w-full bg-gradient-primary text-lg py-6"
+              disabled={isLoading}
             >
-              {isLogin ? "تسجيل الدخول" : "إنشاء حساب جديد"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 ml-2 animate-spin" />
+                  {isLogin ? "جاري تسجيل الدخول..." : "جاري إنشاء الحساب..."}
+                </>
+              ) : (
+                isLogin ? "تسجيل الدخول" : "إنشاء حساب جديد"
+              )}
             </Button>
 
             {/* Toggle Auth Mode */}

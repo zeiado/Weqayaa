@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WeqayaLogo } from "./WeqayaLogo";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { AIChat } from "./AIChat";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 import { 
   Bell, 
   MessageCircle, 
@@ -16,20 +18,43 @@ import {
   Activity,
   Zap,
   Clock,
-  ArrowLeft
+  ArrowLeft,
+  User
 } from "lucide-react";
 
 export const Dashboard = ({ 
-  userName = "أحمد", 
+  userName, 
   onBack,
   onOpenChat,
-  onOpenCafeteria
+  onOpenCafeteria,
+  onOpenProfile
 }: { 
   userName?: string;
   onBack: () => void;
   onOpenChat: () => void;
   onOpenCafeteria: () => void;
+  onOpenProfile?: () => void;
 }) => {
+  const [userData, setUserData] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null>(null);
+
+  useEffect(() => {
+    // Get user data from localStorage
+    const storedUserData = localStorage.getItem('userData');
+    if (storedUserData) {
+      try {
+        const parsed = JSON.parse(storedUserData);
+        setUserData(parsed);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
+
+  const displayName = userData ? `${userData.firstName} ${userData.lastName}` : userName || "أحمد";
   const todaysMeals = [
     {
       name: "فول مدمس بالطحينة",
@@ -65,41 +90,13 @@ export const Dashboard = ({
 
   return (
     <div className="min-h-screen bg-gradient-wellness">
-      {/* Header */}
-      <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-border z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                onClick={onBack}
-                className="flex items-center gap-2 text-muted-foreground"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                الرئيسية
-              </Button>
-              <WeqayaLogo size="sm" />
-              <div className="text-right">
-                <h1 className="font-semibold text-foreground">أهلاً {userName}</h1>
-                <p className="text-sm text-muted-foreground">اليوم الأربعاء، 21 سبتمبر</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="w-5 h-5" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full"></div>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={onOpenChat}
-              >
-                <MessageCircle className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header 
+        onBack={onBack}
+        showBackButton={true}
+        title={`أهلاً ${displayName}`}
+        onOpenChat={onOpenChat}
+        onOpenProfile={onOpenProfile}
+      />
 
       <div className="container mx-auto px-6 py-6 space-y-6">
         {/* Quick Stats */}
@@ -226,7 +223,7 @@ export const Dashboard = ({
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <Button variant="outline" className="p-6 h-auto flex-col gap-2">
             <TrendingUp className="w-6 h-6 text-primary" />
             <span>تقرير التقدم</span>
@@ -235,8 +232,16 @@ export const Dashboard = ({
             <Utensils className="w-6 h-6 text-secondary" />
             <span>قائمة الكافتيريا</span>
           </Button>
+          {onOpenProfile && (
+            <Button variant="outline" className="p-6 h-auto flex-col gap-2" onClick={onOpenProfile}>
+              <User className="w-6 h-6 text-accent" />
+              <span>الملف الشخصي</span>
+            </Button>
+          )}
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };
