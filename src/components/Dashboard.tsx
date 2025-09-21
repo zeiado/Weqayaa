@@ -21,16 +21,15 @@ import {
 
 export const Dashboard = ({ 
   userName = "أحمد", 
-  onBack 
+  onBack,
+  onOpenChat,
+  onOpenCafeteria
 }: { 
   userName?: string;
   onBack: () => void;
+  onOpenChat: () => void;
+  onOpenCafeteria: () => void;
 }) => {
-  const [showChat, setShowChat] = useState(false);
-
-  if (showChat) {
-    return <AIChat onBack={() => setShowChat(false)} />;
-  }
   const todaysMeals = [
     {
       name: "فول مدمس بالطحينة",
@@ -93,7 +92,7 @@ export const Dashboard = ({
               <Button 
                 variant="ghost" 
                 size="icon"
-                onClick={() => setShowChat(true)}
+                onClick={onOpenChat}
               >
                 <MessageCircle className="w-5 h-5" />
               </Button>
@@ -141,7 +140,7 @@ export const Dashboard = ({
             <Button 
               variant="secondary" 
               className="bg-white/20 text-white border-white/30 hover:bg-white/30"
-              onClick={() => setShowChat(true)}
+              onClick={onOpenChat}
             >
               <MessageCircle className="w-4 h-4 ml-2" />
               ابدأ المحادثة
@@ -232,7 +231,7 @@ export const Dashboard = ({
             <TrendingUp className="w-6 h-6 text-primary" />
             <span>تقرير التقدم</span>
           </Button>
-          <Button variant="outline" className="p-6 h-auto flex-col gap-2">
+          <Button variant="outline" className="p-6 h-auto flex-col gap-2" onClick={onOpenCafeteria}>
             <Utensils className="w-6 h-6 text-secondary" />
             <span>قائمة الكافتيريا</span>
           </Button>

@@ -3,8 +3,10 @@ import { HeroSection } from "@/components/HeroSection";
 import { OnboardingFlow } from "@/components/OnboardingFlow";
 import { Dashboard } from "@/components/Dashboard";
 import { Auth } from "@/components/Auth";
+import { AIChat } from "@/components/AIChat";
+import CafeteriaMenu from "@/components/CafeteriaMenu";
 
-type AppState = "landing" | "auth" | "onboarding" | "dashboard";
+type AppState = "landing" | "auth" | "onboarding" | "dashboard" | "chat" | "cafeteria";
 
 interface UserData {
   name: string;
@@ -41,13 +43,34 @@ const Index = () => {
     setCurrentState("landing");
   };
 
+  const showChat = () => {
+    setCurrentState("chat");
+  };
+
+  const showCafeteria = () => {
+    setCurrentState("cafeteria");
+  };
+
+  const backToDashboard = () => {
+    setCurrentState("dashboard");
+  };
+
   switch (currentState) {
     case "auth":
       return <Auth onBack={backToLanding} onLogin={handleLogin} />;
     case "onboarding":
       return <OnboardingFlow onComplete={handleOnboardingComplete} onBack={backToLanding} />;
     case "dashboard":
-      return <Dashboard userName={userData?.name} onBack={backToLanding} />;
+      return <Dashboard 
+        userName={userData?.name} 
+        onBack={backToLanding} 
+        onOpenChat={showChat}
+        onOpenCafeteria={showCafeteria}
+      />;
+    case "chat":
+      return <AIChat onBack={backToDashboard} />;
+    case "cafeteria":
+      return <CafeteriaMenu onBack={backToDashboard} />;
     default:
       return <HeroSection onStartOnboarding={startOnboarding} onLogin={showAuth} />;
   }
