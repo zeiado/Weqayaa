@@ -7,10 +7,10 @@ import { Users, Utensils, Brain, Star } from "lucide-react";
 import weqayaHero from "@/assets/weqaya-hero.jpg";
 
 export const HeroSection = ({ 
-  onStartOnboarding, 
+  onStartRegistration, 
   onLogin 
 }: { 
-  onStartOnboarding?: () => void;
+  onStartRegistration?: () => void;
   onLogin?: () => void;
 }) => {
   return (
@@ -46,7 +46,7 @@ export const HeroSection = ({
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               className="bg-gradient-primary hover:shadow-lg transition-smooth text-lg px-8 py-6 rounded-2xl"
-              onClick={onStartOnboarding}
+              onClick={onStartRegistration}
             >
               ابدأ رحلة الوقاية المجانية
             </Button>

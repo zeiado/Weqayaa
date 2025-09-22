@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WeqayaLogo } from "./WeqayaLogo";
+import { ThemeToggle } from "./ThemeToggle";
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { authApi, LoginRequest, RegisterRequest } from "@/services/authApi";
 import { useToast } from "@/hooks/use-toast";
@@ -11,11 +12,14 @@ import { useToast } from "@/hooks/use-toast";
 interface AuthProps {
   onBack: () => void;
   onLogin: () => void;
+  onRegister?: () => void;
+  initialMode?: "login" | "register";
 }
 
-export const Auth = ({ onBack, onLogin }: AuthProps) => {
-  const [isLogin, setIsLogin] = useState(true);
+export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: AuthProps) => {
+  const [isLogin, setIsLogin] = useState(initialMode === "login");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -90,7 +94,12 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
             description: `مرحباً ${response.firstName}! تم إنشاء حسابك بنجاح.`,
           });
 
-          onLogin();
+          // For new registrations, go to onboarding
+          if (onRegister) {
+            onRegister();
+          } else {
+            onLogin();
+          }
         } else {
           throw new Error(response.errors?.join(', ') || 'فشل في إنشاء الحساب');
         }
@@ -110,7 +119,7 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
   return (
     <div className="min-h-screen bg-gradient-wellness">
       {/* Header with back button */}
-      <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-border z-50">
+      <header className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-border z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Button 
@@ -122,6 +131,7 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
               العودة للرئيسية
             </Button>
             <WeqayaLogo size="sm" />
+            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -237,15 +247,25 @@ export const Auth = ({ onBack, onLogin }: AuthProps) => {
                 <div className="relative">
                   <Input
                     id="confirmPassword"
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder="أعد إدخال كلمة المرور"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="text-right pr-10"
+                    className="text-right pr-10 pl-10"
                     required={!isLogin}
                     disabled={isLoading}
                   />
                   <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute left-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    disabled={isLoading}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </Button>
                 </div>
               </div>
             )}

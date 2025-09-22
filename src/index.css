@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    /* Fresh Wellness Color Palette */
+    /* Fresh Wellness Color Palette - Light Mode */
     --background: 120 20% 98%;
     --foreground: 160 15% 12%;
 
@@ -60,6 +60,54 @@
 
     --radius: 1rem;
   }
+
+  .dark {
+    /* Dark Mode Color Palette */
+    --background: 160 15% 8%;
+    --foreground: 120 20% 95%;
+
+    --card: 160 15% 12%;
+    --card-foreground: 120 20% 95%;
+
+    --popover: 160 15% 12%;
+    --popover-foreground: 120 20% 95%;
+
+    /* Primary: Brighter Mint Green for dark mode */
+    --primary: 152 70% 55%;
+    --primary-foreground: 160 15% 8%;
+    --primary-glow: 152 80% 70%;
+
+    /* Secondary: Brighter Orange for dark mode */
+    --secondary: 25 90% 65%;
+    --secondary-foreground: 160 15% 8%;
+    --secondary-glow: 35 95% 75%;
+
+    /* Accent: Brighter Blue for dark mode */
+    --accent: 210 80% 65%;
+    --accent-foreground: 160 15% 8%;
+    --accent-glow: 210 90% 80%;
+
+    --muted: 160 15% 15%;
+    --muted-foreground: 120 20% 70%;
+
+    --destructive: 0 80% 65%;
+    --destructive-foreground: 160 15% 8%;
+
+    --border: 160 15% 20%;
+    --input: 160 15% 15%;
+    --ring: 152 70% 55%;
+
+    /* Dark Mode Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-glow)));
+    --gradient-wellness: linear-gradient(180deg, hsl(160 15% 8%), hsl(160 20% 12%));
+    --gradient-glow: linear-gradient(135deg, hsl(var(--primary-glow) / 0.2), hsl(var(--accent-glow) / 0.2));
+
+    /* Dark Mode Shadows */
+    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.15);
+    --shadow-medium: 0 8px 30px hsl(var(--primary) / 0.2);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
+  }
 }
 
 @layer base {
@@ -85,7 +133,7 @@
 @layer components {
   /* Glassmorphism Card */
   .glass-card {
-    @apply bg-white/60 backdrop-blur-sm border border-white/20 rounded-2xl;
+    @apply bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-white/20 dark:border-gray-700/20 rounded-2xl;
     box-shadow: var(--shadow-soft);
   }
 

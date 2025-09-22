@@ -10,6 +10,7 @@ import { DailyMealPlan } from "@/components/DailyMealPlan";
 import { authApi } from "@/services/authApi";
 
 type AppState = "landing" | "auth" | "onboarding" | "dashboard" | "chat" | "cafeteria" | "profile" | "mealplan";
+type AuthMode = "login" | "register";
 
 interface UserData {
   name: string;
@@ -23,6 +24,7 @@ interface UserData {
 
 const Index = () => {
   const [currentState, setCurrentState] = useState<AppState>("landing");
+  const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isMealPlanMode, setIsMealPlanMode] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -39,16 +41,22 @@ const Index = () => {
     setCurrentState("dashboard");
   };
 
-  const startOnboarding = () => {
-    setCurrentState("onboarding");
+  const startRegistration = () => {
+    setAuthMode("register");
+    setCurrentState("auth");
   };
 
   const showAuth = () => {
+    setAuthMode("login");
     setCurrentState("auth");
   };
 
   const handleLogin = () => {
     setCurrentState("dashboard");
+  };
+
+  const handleRegister = () => {
+    setCurrentState("onboarding");
   };
 
   const backToLanding = () => {
@@ -87,7 +95,12 @@ const Index = () => {
 
   switch (currentState) {
     case "auth":
-      return <Auth onBack={backToLanding} onLogin={handleLogin} />;
+      return <Auth 
+        onBack={backToLanding} 
+        onLogin={handleLogin} 
+        onRegister={handleRegister}
+        initialMode={authMode}
+      />;
     case "onboarding":
       return <OnboardingFlow onComplete={handleOnboardingComplete} onBack={backToLanding} />;
     case "dashboard":
@@ -108,7 +121,7 @@ const Index = () => {
     case "mealplan":
       return <DailyMealPlan onBack={backToDashboard} onOpenCafeteria={showCafeteriaForMealPlan} onDateChange={setSelectedDate} />;
     default:
-      return <HeroSection onStartOnboarding={startOnboarding} onLogin={showAuth} />;
+      return <HeroSection onStartRegistration={startRegistration} onLogin={showAuth} />;
   }
 };
 

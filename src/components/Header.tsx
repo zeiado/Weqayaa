@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { WeqayaLogo } from "./WeqayaLogo";
+import { ThemeToggle } from "./ThemeToggle";
 import { Bell, MessageCircle, User, Settings, LogOut } from "lucide-react";
 import { authApi } from "@/services/authApi";
 
@@ -34,7 +35,7 @@ export const Header = ({
   };
 
   return (
-    <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-border z-50">
+    <header className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-border z-50">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -57,6 +58,7 @@ export const Header = ({
           </div>
           
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             {onLogin ? (
               <Button 
                 variant="outline" 
