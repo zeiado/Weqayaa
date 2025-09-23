@@ -40,7 +40,8 @@ export interface MealPlan {
 export interface CreateMealPlanRequest {
   date: string;
   mealType: MealType;
-  menuId: number;
+  foodItemId: number;
+  quantity?: number;
 }
 
 export interface MealPlanResponse {

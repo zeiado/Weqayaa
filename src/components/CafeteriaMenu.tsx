@@ -41,9 +41,10 @@ interface CafeteriaMenuProps {
   onBack: () => void;
   isMealPlanMode?: boolean;
   selectedDate?: string;
+  onMealPlanUpdated?: () => void;
 }
 
-const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = false, selectedDate: propSelectedDate }) => {
+const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = false, selectedDate: propSelectedDate, onMealPlanUpdated }) => {
   const [menus, setMenus] = useState<MenuResponse[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,6 +56,7 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
   const [isLoading, setIsLoading] = useState(false);
   const [isAddingToMealPlan, setIsAddingToMealPlan] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(MealType.Breakfast);
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
   const { toast } = useToast();
 
   const currentLocation = menus.find(loc => loc.id === selectedLocation);
@@ -117,23 +119,74 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
   const addToMealPlan = async (item: MenuItem) => {
     try {
       setIsAddingToMealPlan(true);
+      
+      // Check authentication
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('يجب تسجيل الدخول أولاً لإضافة الطعام لخطة الوجبات');
+      }
+      
+      // Validate token format (basic check)
+      if (token.length < 10) {
+        throw new Error('رمز المصادقة غير صالح');
+      }
+      
+      // Validate required data
+      if (!item.id) {
+        throw new Error('Food item ID is missing');
+      }
+      
+      if (!selectedDate) {
+        throw new Error('Selected date is missing');
+      }
+      
+      // Validate date format
+      const dateObj = new Date(selectedDate);
+      if (isNaN(dateObj.getTime())) {
+        throw new Error('تاريخ غير صالح');
+      }
+      
+      // Validate quantity
+      if (selectedQuantity < 1 || selectedQuantity > 10) {
+        throw new Error('الكمية يجب أن تكون بين 1 و 10');
+      }
+
       const mealPlanData: CreateMealPlanRequest = {
         date: new Date(selectedDate).toISOString(),
         mealType: selectedMealType,
-        menuId: item.id // Using item ID as menuId for simplicity
+        foodItemId: item.id,
+        quantity: selectedQuantity
       };
 
-      await mealPlanApi.createMealPlan(mealPlanData);
+      console.log('Creating meal plan with data:', mealPlanData);
+      console.log('Selected date:', selectedDate);
+      console.log('Selected meal type:', selectedMealType);
+      console.log('Item details:', item);
+      
+      const result = await mealPlanApi.createMealPlan(mealPlanData);
+      console.log('Meal plan created successfully:', result);
       
       toast({
         title: "تم إضافة الطعام لخطة الوجبات",
-        description: `تم إضافة ${item.name} إلى ${getMealTypeLabel(selectedMealType)}`,
+        description: `تم إضافة ${selectedQuantity} حصة من ${item.name} إلى ${getMealTypeLabel(selectedMealType)}`,
       });
+      
+      // Notify parent component to refresh meal plan
+      if (onMealPlanUpdated) {
+        onMealPlanUpdated();
+      }
     } catch (error) {
       console.error('Error adding to meal plan:', error);
+      
+      // Get more specific error message
+      let errorMessage = "حدث خطأ أثناء إضافة الطعام لخطة الوجبات";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "خطأ في إضافة الطعام",
-        description: "حدث خطأ أثناء إضافة الطعام لخطة الوجبات",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -270,7 +323,7 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         {isMealPlanMode && (
           <Card className="glass-card mb-6">
             <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 mb-4">
                 <Clock className="w-5 h-5 text-primary" />
                 <label className="text-sm font-medium">اختر نوع الوجبة:</label>
                 <Select value={selectedMealType.toString()} onValueChange={(value) => setSelectedMealType(parseInt(value) as MealType)}>
@@ -285,6 +338,18 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-medium">الكمية:</label>
+                <Input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={selectedQuantity}
+                  onChange={(e) => setSelectedQuantity(parseInt(e.target.value) || 1)}
+                  className="max-w-20"
+                />
+                <span className="text-sm text-muted-foreground">حصة</span>
               </div>
             </CardContent>
           </Card>
@@ -480,9 +545,23 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
                         )}
                       </Button>
                     ) : (
-                      <Button size="sm" disabled={!item.isAvailable}>
-                        <Plus className="h-3 w-3 ml-1" />
-                        للخطة
+                      <Button 
+                        size="sm" 
+                        disabled={!item.isAvailable || isAddingToMealPlan}
+                        onClick={() => addToMealPlan(item)}
+                        className="bg-gradient-primary"
+                      >
+                        {isAddingToMealPlan ? (
+                          <>
+                            <Loader2 className="h-3 w-3 ml-1 animate-spin" />
+                            جاري الإضافة...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-3 w-3 ml-1" />
+                            اضافه للخطه
+                          </>
+                        )}
                       </Button>
                     )}
 

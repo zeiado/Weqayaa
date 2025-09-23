@@ -29,14 +29,46 @@ class MealPlanApiService {
     };
 
     try {
+      console.log('Making request to:', url);
+      console.log('Request config:', {
+        method: config.method,
+        headers: config.headers,
+        body: config.body
+      });
+      
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        let errorData = {};
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+        }
+        
+        console.error('API Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+          url
+        });
+        
+        // Provide more specific error messages
+        let errorMessage = `HTTP error! status: ${response.status} - ${response.statusText}`;
+        if (errorData && typeof errorData === 'object') {
+          if ('message' in errorData && typeof errorData.message === 'string') {
+            errorMessage = errorData.message;
+          } else if ('errors' in errorData && Array.isArray(errorData.errors)) {
+            errorMessage = errorData.errors.join(', ');
+          }
+        }
+        
+        throw new Error(errorMessage);
       }
 
-      return await response.json();
+      const result = await response.json();
+      console.log('API Success Response:', result);
+      return result;
     } catch (error) {
       console.error('Meal Plan API request failed:', error);
       throw error;
@@ -44,7 +76,8 @@ class MealPlanApiService {
   }
 
   async createMealPlan(mealPlanData: CreateMealPlanRequest): Promise<MealPlanResponse> {
-    return this.makeRequest<MealPlanResponse>('/Nutrition/meal-plan', {
+    console.log('Making request to create meal plan:', mealPlanData);
+    return this.makeRequest<MealPlanResponse>('/Nutrition/meal-plana', {
       method: 'POST',
       body: JSON.stringify(mealPlanData),
     });

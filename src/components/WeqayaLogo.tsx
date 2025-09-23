@@ -1,4 +1,5 @@
 import React from "react";
+import logoImage from '../assets/weqaya-logo.png'; // uncomment this line
 
 export const WeqayaLogo = ({
   size = "xl",
@@ -66,59 +67,29 @@ export const WeqayaLogo = ({
         `}>
           {/* Inner gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-teal-600/10 pointer-events-none" />
-          
-          {/* CSS Heart Logo */}
+         
+          {/* Logo Image */}
           <div className={`
-            relative
+            relative w-full h-full flex items-center justify-center
             ${animated ? "group-hover:scale-105 transition-transform duration-300" : ""}
           `}>
-            <svg 
-              viewBox="0 0 200 120" 
-              className="w-3/4 h-3/4"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Define gradient */}
-              <defs>
-                <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#14b8a6" />
-                  <stop offset="100%" stopColor="#0d9488" />
-                </linearGradient>
-              </defs>
-              
-              {/* First heart (left/back) */}
-              <path
-                d="M60 25 
-                   C60 15, 45 10, 35 25
-                   C25 10, 10 15, 10 25
-                   C10 40, 35 65, 35 65
-                   C35 65, 60 40, 60 25 Z"
-                fill="url(#heartGradient)"
-                className={animated ? "animate-pulse" : ""}
-                style={{ animationDelay: "0s", animationDuration: "2s" }}
-              />
-              
-              {/* Second heart (right/front) */}
-              <path
-                d="M130 25
-                   C130 15, 115 10, 105 25  
-                   C95 10, 80 15, 80 25
-                   C80 40, 105 65, 105 65
-                   C105 65, 130 40, 130 25 Z"
-                fill="url(#heartGradient)"
-                className={animated ? "animate-pulse" : ""}
-                style={{ animationDelay: "0.5s", animationDuration: "2s" }}
-              />
-              
-              {/* Interlocking connector */}
-              <path
-                d="M65 35 
-                   C75 25, 85 25, 95 35
-                   C85 45, 75 45, 65 35 Z"
-                fill="url(#heartGradient)"
-                className={animated ? "animate-pulse" : ""}
-                style={{ animationDelay: "1s", animationDuration: "2s" }}
-              />
-            </svg>
+            <img 
+              src={logoImage}
+              alt="Weqaya Logo"
+              className={`
+                w-full h-full object-cover
+                ${animated ? "animate-pulse" : ""}
+              `}
+              style={{ 
+                filter: 'drop-shadow(0 4px 8px rgba(20, 184, 166, 0.3))',
+                animationDuration: "2s"
+              }}
+              onError={(e) => {
+                console.error("Logo image failed to load");
+                // Fallback to a placeholder or hide the image
+                e.currentTarget.style.display = 'none';
+              }}
+            />
           </div>
 
           {/* Shine effect */}
@@ -146,7 +117,7 @@ export const WeqayaLogo = ({
             ${textSizes[size]}
             ${animated ? "animate-gradient" : ""}
           `}
-          style={{ 
+          style={{
             background: 'linear-gradient(135deg, #f97316 0%, #fb923c 25%, #fdba74 50%, #fed7aa 75%, #ffedd5 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -154,7 +125,7 @@ export const WeqayaLogo = ({
           }}>
             {textContent}
           </h1>
-          
+         
           {showTagline && (
             <p className={`
               font-medium tracking-[0.2em] text-teal-600
