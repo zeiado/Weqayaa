@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      screens: {
+        'xs': '475px',
+        '3xl': '1600px',
+      },
       fontFamily: {
         cairo: ['Cairo', 'system-ui', 'sans-serif'],
         arabic: ['Cairo', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],

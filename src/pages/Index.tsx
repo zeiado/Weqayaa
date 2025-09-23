@@ -7,9 +7,10 @@ import { AIChat } from "@/components/AIChat";
 import { UserProfile } from "@/components/UserProfile";
 import CafeteriaMenu from "@/components/CafeteriaMenu";
 import { DailyMealPlan } from "@/components/DailyMealPlan";
+import { ProgressReport } from "@/components/ProgressReport";
 import { authApi } from "@/services/authApi";
 
-type AppState = "landing" | "auth" | "onboarding" | "dashboard" | "chat" | "cafeteria" | "profile" | "mealplan";
+type AppState = "landing" | "auth" | "onboarding" | "dashboard" | "chat" | "cafeteria" | "profile" | "mealplan" | "progress";
 type AuthMode = "login" | "register";
 
 interface UserData {
@@ -89,6 +90,10 @@ const Index = () => {
     setCurrentState("mealplan");
   };
 
+  const showProgressReport = () => {
+    setCurrentState("progress");
+  };
+
   const handleLogout = () => {
     setCurrentState("landing");
   };
@@ -111,6 +116,7 @@ const Index = () => {
         onOpenCafeteria={showCafeteria}
         onOpenProfile={showProfile}
         onOpenMealPlan={showMealPlan}
+        onOpenProgressReport={showProgressReport}
       />;
     case "chat":
       return <AIChat onBack={backToDashboard} />;
@@ -120,6 +126,8 @@ const Index = () => {
       return <UserProfile onBack={backToDashboard} onOpenChat={showChat} />;
     case "mealplan":
       return <DailyMealPlan onBack={backToDashboard} onOpenCafeteria={showCafeteriaForMealPlan} onDateChange={setSelectedDate} />;
+    case "progress":
+      return <ProgressReport onBack={backToDashboard} />;
     default:
       return <HeroSection onStartRegistration={startRegistration} onLogin={showAuth} />;
   }

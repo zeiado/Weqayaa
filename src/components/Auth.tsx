@@ -136,7 +136,7 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-12 max-w-md">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 max-w-md">
         {/* Logo Section */}
         <div className="text-center mb-8">
           <WeqayaLogo size="lg" />
@@ -152,8 +152,8 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
         </div>
 
         {/* Auth Form */}
-        <Card className="glass-card p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <Card className="glass-card p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* First Name Field (Sign Up Only) */}
             {!isLogin && (
               <div>
@@ -282,7 +282,7 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
             {/* Submit Button */}
             <Button 
               type="submit" 
-              className="w-full bg-gradient-primary text-lg py-6"
+              className="w-full bg-gradient-primary text-base sm:text-lg py-4 sm:py-6"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -322,13 +322,13 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
             </div>
           </div>
 
-          <div className="mt-6 space-y-3">
-            <Button variant="outline" className="w-full">
-              <div className="w-5 h-5 ml-2 bg-red-500 rounded"></div>
+          <div className="mt-4 sm:mt-6 space-y-3">
+            <Button variant="outline" className="w-full text-sm sm:text-base">
+              <div className="w-4 h-4 sm:w-5 sm:h-5 ml-2 bg-red-500 rounded"></div>
               {isLogin ? "الدخول" : "التسجيل"} بحساب Google
             </Button>
-            <Button variant="outline" className="w-full">
-              <div className="w-5 h-5 ml-2 bg-blue-600 rounded"></div>
+            <Button variant="outline" className="w-full text-sm sm:text-base">
+              <div className="w-4 h-4 sm:w-5 sm:h-5 ml-2 bg-blue-600 rounded"></div>
               {isLogin ? "الدخول" : "التسجيل"} بحساب Facebook
             </Button>
           </div>
@@ -336,7 +336,7 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
 
         {/* Terms and Privacy */}
         {!isLogin && (
-          <div className="mt-6 text-center text-xs text-muted-foreground">
+          <div className="mt-4 sm:mt-6 text-center text-xs text-muted-foreground">
             بإنشاء حساب، أنت توافق على{" "}
             <Button variant="link" className="text-primary p-0 text-xs">
               الشروط والأحكام

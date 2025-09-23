@@ -1,5 +1,5 @@
 // Meal Plan API Service
-import { CreateMealPlanRequest, MealPlanResponse } from "@/types/mealPlan";
+import { CreateMealPlanRequest, UpdateMealPlanRequest, MealPlanResponse } from "@/types/mealPlan";
 
 const API_BASE_URL = 'https://weqaya-api-v1.runasp.net/api';
 
@@ -77,7 +77,7 @@ class MealPlanApiService {
 
   async createMealPlan(mealPlanData: CreateMealPlanRequest): Promise<MealPlanResponse> {
     console.log('Making request to create meal plan:', mealPlanData);
-    return this.makeRequest<MealPlanResponse>('/Nutrition/meal-plana', {
+    return this.makeRequest<MealPlanResponse>('/Nutrition/meal-plan', {
       method: 'POST',
       body: JSON.stringify(mealPlanData),
     });
@@ -88,6 +88,25 @@ class MealPlanApiService {
       method: 'GET',
     });
   }
+
+  async updateMealPlan(mealPlanId: number, mealPlanData: UpdateMealPlanRequest): Promise<MealPlanResponse> {
+    console.log('Making request to update meal plan:', { mealPlanId, mealPlanData });
+    return this.makeRequest<MealPlanResponse>(`/Nutrition/meal-plan/${mealPlanId}`, {
+      method: 'PUT',
+      body: JSON.stringify(mealPlanData),
+    });
+  }
+
+  async deleteMealPlan(mealPlanId: number): Promise<void> {
+    console.log('Making request to delete meal plan:', mealPlanId);
+    return this.makeRequest<void>(`/Nutrition/meal-plan/${mealPlanId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Note: Food item validation is now handled by the backend
+  // The validateFoodItem method has been removed as it was causing issues
+  // The backend meal plan API will validate food items during creation
 }
 
 export const mealPlanApi = new MealPlanApiService();

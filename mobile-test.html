@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Responsiveness Test - وقاية</title>
+    <style>
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(180deg, #f0fdf4, #ecfdf5);
+            direction: rtl;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+        }
+        .test-title {
+            color: #10B981;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .test-item {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 0;
+            transition: all 0.3s ease;
+        }
+        .test-item:hover {
+            border-color: #10B981;
+            transform: translateY(-2px);
+        }
+        .test-item h3 {
+            color: #374151;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+        .test-item p {
+            color: #6b7280;
+            margin: 0;
+            font-size: 14px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .status.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status.in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .breakpoint-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .breakpoint-item {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .breakpoint-item h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+        .breakpoint-item p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        @media (max-width: 640px) {
+            .test-container {
+                padding: 0 10px;
+            }
+            .test-section {
+                padding: 16px;
+                margin: 16px 0;
+            }
+            .test-title {
+                font-size: 20px;
+            }
+            .breakpoint-test {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .breakpoint-test {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-section">
+            <h1 class="test-title">🧪 اختبار الاستجابة للهواتف المحمولة - وقاية</h1>
+            <p style="color: #6b7280; margin-bottom: 20px;">تم تحسين الموقع ليعمل بشكل مثالي على جميع أحجام الشاشات</p>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">✅ التحسينات المكتملة</h2>
+            
+            <div class="test-item">
+                <h3>🎯 شريط التنقل (Header)</h3>
+                <p>تم تحسين شريط التنقل ليعرض العناصر الأساسية فقط على الهواتف المحمولة مع إخفاء العناصر الثانوية</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>📊 لوحة التحكم (Dashboard)</h3>
+                <p>تم تحسين تخطيط الإحصائيات السريعة والبطاقات لتناسب الشاشات الصغيرة مع تحسين المسافات</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>🍽️ قائمة الكافتيريا</h3>
+                <p>تم تحسين تخطيط البطاقات والمرشحات لتعمل بشكل مثالي على الهواتف المحمولة</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>💬 المحادثة الذكية</h3>
+                <p>تم تحسين واجهة المحادثة مع تحسين حجم الرسائل وأزرار الإدخال للهواتف المحمولة</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>🔐 صفحة تسجيل الدخول</h3>
+                <p>تم تحسين النماذج والمسافات لتناسب الشاشات الصغيرة مع تحسين تجربة المستخدم</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>🏠 الصفحة الرئيسية</h3>
+                <p>تم تحسين تخطيط الصفحة الرئيسية مع تحسين حجم الأزرار والنصوص للهواتف المحمولة</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">📱 نقاط التوقف (Breakpoints)</h2>
+            <div class="breakpoint-test">
+                <div class="breakpoint-item">
+                    <h4>📱 Mobile</h4>
+                    <p>أقل من 640px<br/>هواتف محمولة</p>
+                </div>
+                <div class="breakpoint-item">
+                    <h4>📱 Small</h4>
+                    <p>640px - 768px<br/>هواتف كبيرة</p>
+                </div>
+                <div class="breakpoint-item">
+                    <h4>💻 Medium</h4>
+                    <p>768px - 1024px<br/>أجهزة لوحية</p>
+                </div>
+                <div class="breakpoint-item">
+                    <h4>🖥️ Large</h4>
+                    <p>1024px+<br/>أجهزة سطح المكتب</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">🎨 تحسينات إضافية</h2>
+            
+            <div class="test-item">
+                <h3>👆 أهداف اللمس</h3>
+                <p>تم ضبط حجم جميع الأزرار والعناصر القابلة للنقر لتكون مناسبة للمس (44px كحد أدنى)</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>📏 المسافات والتباعد</h3>
+                <p>تم تحسين المسافات بين العناصر لتناسب الشاشات الصغيرة مع الحفاظ على التوازن البصري</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>🔤 أحجام النصوص</h3>
+                <p>تم تحسين أحجام النصوص لتناسب الشاشات المختلفة مع الحفاظ على قابلية القراءة</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>🎯 التمرير السلس</h3>
+                <p>تم تحسين تجربة التمرير على الأجهزة المحمولة مع دعم التمرير السلس</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+
+            <div class="test-item">
+                <h3>🛡️ Safe Area</h3>
+                <p>تم إضافة دعم للمناطق الآمنة في الأجهزة الحديثة مثل iPhone X وما بعده</p>
+                <span class="status completed">مكتمل</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">🚀 كيفية الاختبار</h2>
+            <div style="background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 12px; padding: 16px;">
+                <h3 style="color: #0c4a6e; margin: 0 0 12px 0;">📋 خطوات اختبار الاستجابة:</h3>
+                <ol style="color: #0c4a6e; margin: 0; padding-right: 20px;">
+                    <li>افتح الموقع في متصفح الويب</li>
+                    <li>اضغط F12 لفتح أدوات المطور</li>
+                    <li>اضغط على أيقونة الجهاز المحمول (📱)</li>
+                    <li>جرب أحجام شاشات مختلفة (iPhone, iPad, etc.)</li>
+                    <li>تأكد من أن جميع العناصر تظهر بشكل صحيح</li>
+                    <li>اختبر التفاعل مع الأزرار والروابط</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

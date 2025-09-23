@@ -36,76 +36,125 @@ export const Header = ({
 
   return (
     <header className="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-border z-50">
-      <div className="container mx-auto px-6 py-4">
+      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
             {showBackButton && onBack && (
               <Button 
                 variant="ghost" 
                 onClick={onBack}
-                className="flex items-center gap-2 text-muted-foreground"
+                className="flex items-center gap-1 sm:gap-2 text-muted-foreground shrink-0"
+                size="sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                العودة
+                <span className="hidden sm:inline">العودة</span>
               </Button>
             )}
-            <WeqayaLogo size="sm" />
+            <div className="min-w-0 flex-1">
+              <WeqayaLogo size="sm" />
+            </div>
             {title && (
-              <h1 className="text-xl font-semibold text-foreground">{title}</h1>
+              <h1 className="text-lg sm:text-xl font-semibold text-foreground truncate hidden sm:block">{title}</h1>
             )}
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             <ThemeToggle />
             {onLogin ? (
               <Button 
                 variant="outline" 
-                className="text-primary border-primary/30 hover:bg-primary/10"
+                className="text-primary border-primary/30 hover:bg-primary/10 text-sm px-3 sm:px-4"
                 onClick={onLogin}
+                size="sm"
               >
-                تسجيل الدخول
+                <span className="hidden sm:inline">تسجيل الدخول</span>
+                <span className="sm:hidden">دخول</span>
               </Button>
             ) : (
               <>
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="w-5 h-5" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full"></div>
-                </Button>
-                
-                {onOpenChat && (
+                {/* Mobile: Show only essential buttons */}
+                <div className="hidden sm:flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="w-5 h-5" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full"></div>
+                  </Button>
+                  
+                  {onOpenChat && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={onOpenChat}
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                    </Button>
+                  )}
+                  
+                  {onOpenProfile && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={onOpenProfile}
+                    >
+                      <User className="w-5 h-5" />
+                    </Button>
+                  )}
+                  
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    onClick={onOpenChat}
+                    onClick={handleLogout}
+                    className="text-red-500 hover:text-red-700"
                   >
-                    <MessageCircle className="w-5 h-5" />
+                    <LogOut className="w-5 h-5" />
                   </Button>
-                )}
-                
-                {onOpenProfile && (
+                </div>
+
+                {/* Mobile: Show only chat and profile buttons */}
+                <div className="flex sm:hidden items-center gap-1">
+                  {onOpenChat && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={onOpenChat}
+                      className="w-8 h-8"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                    </Button>
+                  )}
+                  
+                  {onOpenProfile && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={onOpenProfile}
+                      className="w-8 h-8"
+                    >
+                      <User className="w-4 h-4" />
+                    </Button>
+                  )}
+                  
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    onClick={onOpenProfile}
+                    onClick={handleLogout}
+                    className="text-red-500 hover:text-red-700 w-8 h-8"
                   >
-                    <User className="w-5 h-5" />
+                    <LogOut className="w-4 h-4" />
                   </Button>
-                )}
-                
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={handleLogout}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <LogOut className="w-5 h-5" />
-                </Button>
+                </div>
               </>
             )}
           </div>
         </div>
+        
+        {/* Mobile title row */}
+        {title && (
+          <div className="sm:hidden mt-2">
+            <h1 className="text-lg font-semibold text-foreground truncate">{title}</h1>
+          </div>
+        )}
       </div>
     </header>
   );

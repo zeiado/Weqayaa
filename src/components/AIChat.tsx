@@ -82,27 +82,27 @@ export const AIChat = ({ onBack }: AIChatProps) => {
         title="مستشار وقاية الذكي"
       />
 
-      <div className="container mx-auto px-6 py-6 h-[calc(100vh-120px)] flex flex-col">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 h-[calc(100vh-120px)] flex flex-col">
         {/* Messages */}
-        <ScrollArea className="flex-1 mb-6">
-          <div className="space-y-4">
+        <ScrollArea className="flex-1 mb-4 sm:mb-6">
+          <div className="space-y-3 sm:space-y-4">
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.isUser ? 'justify-start' : 'justify-end'} mb-4`}
+                className={`flex ${message.isUser ? 'justify-start' : 'justify-end'} mb-3 sm:mb-4`}
               >
-                <div className={`flex items-start gap-3 max-w-[80%] ${message.isUser ? '' : 'flex-row-reverse'}`}>
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback className={message.isUser ? 'bg-primary text-white' : 'bg-secondary text-white'}>
+                <div className={`flex items-start gap-2 sm:gap-3 max-w-[85%] sm:max-w-[80%] ${message.isUser ? '' : 'flex-row-reverse'}`}>
+                  <Avatar className="w-6 h-6 sm:w-8 sm:h-8">
+                    <AvatarFallback className={`text-xs sm:text-sm ${message.isUser ? 'bg-primary text-white' : 'bg-secondary text-white'}`}>
                       {message.isUser ? 'أ' : 'و'}
                     </AvatarFallback>
                   </Avatar>
-                  <Card className={`p-4 ${
+                  <Card className={`p-3 sm:p-4 ${
                     message.isUser 
                       ? 'bg-primary text-white ml-auto' 
                       : 'glass-card mr-auto'
                   }`}>
-                    <p className="text-sm leading-relaxed">{message.text}</p>
+                    <p className="text-xs sm:text-sm leading-relaxed">{message.text}</p>
                   </Card>
                 </div>
               </div>
@@ -112,9 +112,9 @@ export const AIChat = ({ onBack }: AIChatProps) => {
 
         {/* Quick Actions */}
         {messages.length === 1 && (
-          <div className="mb-4">
-            <p className="text-sm text-muted-foreground mb-3 text-center">أو اختر من الأسئلة الشائعة:</p>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="mb-3 sm:mb-4">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 text-center">أو اختر من الأسئلة الشائعة:</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {quickActions.map((action, index) => (
                 <Button
                   key={index}
@@ -131,23 +131,23 @@ export const AIChat = ({ onBack }: AIChatProps) => {
         )}
 
         {/* Input */}
-        <div className="flex gap-3">
-          <Button variant="outline" size="icon" className="shrink-0">
-            <Camera className="w-5 h-5" />
+        <div className="flex gap-2 sm:gap-3">
+          <Button variant="outline" size="icon" className="shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+            <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
-          <Button variant="outline" size="icon" className="shrink-0">
-            <Mic className="w-5 h-5" />
+          <Button variant="outline" size="icon" className="shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+            <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
           <div className="flex-1 flex gap-2">
             <Input
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="اكتب سؤالك هنا..."
-              className="text-right"
+              className="text-right text-sm"
               onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
             />
-            <Button onClick={sendMessage} className="bg-gradient-primary shrink-0">
-              <Send className="w-5 h-5" />
+            <Button onClick={sendMessage} className="bg-gradient-primary shrink-0 w-8 h-8 sm:w-10 sm:h-10">
+              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
           </div>
         </div>

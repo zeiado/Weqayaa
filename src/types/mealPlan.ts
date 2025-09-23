@@ -41,7 +41,16 @@ export interface CreateMealPlanRequest {
   date: string;
   mealType: MealType;
   foodItemId: number;
-  quantity?: number;
+  menuFoodItemId: number;
+  quantity: number;
+}
+
+export interface UpdateMealPlanRequest {
+  date: string;
+  mealType: MealType;
+  foodItemId: number;
+  menuFoodItemId: number;
+  quantity: number;
 }
 
 export interface MealPlanResponse {

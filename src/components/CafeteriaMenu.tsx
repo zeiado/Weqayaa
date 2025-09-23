@@ -136,6 +136,14 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         throw new Error('Food item ID is missing');
       }
       
+      // Additional validation for food item ID
+      if (typeof item.id !== 'number' || item.id <= 0) {
+        throw new Error(`Invalid food item ID: ${item.id}. Expected a positive number.`);
+      }
+      
+      // Note: Food item validation is now handled by the backend
+      // The backend will validate if the food item exists and is available
+      
       if (!selectedDate) {
         throw new Error('Selected date is missing');
       }
@@ -146,15 +154,16 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         throw new Error('تاريخ غير صالح');
       }
       
-      // Validate quantity
-      if (selectedQuantity < 1 || selectedQuantity > 10) {
-        throw new Error('الكمية يجب أن تكون بين 1 و 10');
+      // Validate quantity (now required)
+      if (!selectedQuantity || selectedQuantity < 1 || selectedQuantity > 10) {
+        throw new Error('الكمية مطلوبة ويجب أن تكون بين 1 و 10');
       }
 
       const mealPlanData: CreateMealPlanRequest = {
         date: new Date(selectedDate).toISOString(),
         mealType: selectedMealType,
-        foodItemId: item.id,
+        foodItemId: item.id, // This might be the meal plan food item ID
+        menuFoodItemId: item.id, // This is the menu food item ID
         quantity: selectedQuantity
       };
 
@@ -162,6 +171,8 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
       console.log('Selected date:', selectedDate);
       console.log('Selected meal type:', selectedMealType);
       console.log('Item details:', item);
+      console.log('Food item ID being sent:', item.id, 'Type:', typeof item.id);
+      console.log('Menu food item ID:', item.id, 'Quantity:', selectedQuantity);
       
       const result = await mealPlanApi.createMealPlan(mealPlanData);
       console.log('Meal plan created successfully:', result);
@@ -182,6 +193,11 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
       let errorMessage = "حدث خطأ أثناء إضافة الطعام لخطة الوجبات";
       if (error instanceof Error) {
         errorMessage = error.message;
+        
+        // If it's a food item not found error, provide more helpful message
+        if (error.message.includes('not found') || error.message.includes('غير موجود')) {
+          errorMessage = `العنصر "${item.name}" غير متوفر حالياً. يرجى تحديث القائمة والمحاولة مرة أخرى.`;
+        }
       }
       
       toast({
@@ -302,32 +318,36 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         title={isMealPlanMode ? "اختيار الطعام لخطة الوجبات" : "قائمة الكافتيريا"}
       />
       
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
 
         {/* Date Picker */}
-        <div className="mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <Calendar className="w-5 h-5 text-primary" />
-            <label htmlFor="date-picker" className="text-sm font-medium">اختر التاريخ:</label>
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+              <label htmlFor="date-picker" className="text-sm font-medium">اختر التاريخ:</label>
+            </div>
             <Input
               id="date-picker"
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="max-w-xs"
+              className="w-full sm:max-w-xs"
             />
           </div>
         </div>
 
         {/* Meal Type Selector for Meal Plan Mode */}
         {isMealPlanMode && (
-          <Card className="glass-card mb-6">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4 mb-4">
-                <Clock className="w-5 h-5 text-primary" />
-                <label className="text-sm font-medium">اختر نوع الوجبة:</label>
+          <Card className="glass-card mb-4 sm:mb-6">
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                  <label className="text-sm font-medium">اختر نوع الوجبة:</label>
+                </div>
                 <Select value={selectedMealType.toString()} onValueChange={(value) => setSelectedMealType(parseInt(value) as MealType)}>
-                  <SelectTrigger className="max-w-xs">
+                  <SelectTrigger className="w-full sm:max-w-xs">
                     <SelectValue placeholder="اختر نوع الوجبة" />
                   </SelectTrigger>
                   <SelectContent>
@@ -339,17 +359,19 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
                 <label className="text-sm font-medium">الكمية:</label>
-                <Input
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={selectedQuantity}
-                  onChange={(e) => setSelectedQuantity(parseInt(e.target.value) || 1)}
-                  className="max-w-20"
-                />
-                <span className="text-sm text-muted-foreground">حصة</span>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={selectedQuantity}
+                    onChange={(e) => setSelectedQuantity(parseInt(e.target.value) || 1)}
+                    className="w-20"
+                  />
+                  <span className="text-sm text-muted-foreground">حصة</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -365,13 +387,13 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
 
         {/* Location Selector */}
         {!isLoading && menus.length > 0 && (
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <Tabs value={selectedLocation.toString()} onValueChange={(value) => setSelectedLocation(parseInt(value))}>
-              <TabsList className={`grid w-full ${menus.length === 1 ? 'grid-cols-1' : menus.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} mb-4`}>
+              <TabsList className={`grid w-full ${menus.length === 1 ? 'grid-cols-1' : menus.length === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-3'} mb-4`}>
                 {menus.map((location) => (
-                  <TabsTrigger key={location.id} value={location.id.toString()} className="text-center">
+                  <TabsTrigger key={location.id} value={location.id.toString()} className="text-center p-2 sm:p-3">
                     <div>
-                      <p className="font-medium text-sm">{location.location}</p>
+                      <p className="font-medium text-xs sm:text-sm">{location.location}</p>
                       <p className="text-xs text-muted-foreground">{location.foodItems.length} وجبة متاحة</p>
                     </div>
                   </TabsTrigger>
@@ -382,7 +404,7 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         )}
 
         {/* Search and Filters */}
-        <div className="space-y-4 mb-6">
+        <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
           <div className="relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -394,27 +416,27 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
           </div>
 
           {/* Filter Pills */}
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-2">
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex flex-wrap gap-1 sm:gap-2">
               {filterCategories.map((filter) => (
                 <Button
                   key={filter.id}
                   variant={selectedFilters.includes(filter.id) ? "default" : "outline"}
                   size="sm"
                   onClick={() => toggleFilter(filter.id)}
-                  className="text-sm"
+                  className="text-xs sm:text-sm"
                 >
                   {filter.label}
                 </Button>
               ))}
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1 sm:gap-2">
               {dietaryFilters.map((filter) => (
                 <Badge
                   key={filter.id}
                   variant={selectedFilters.includes(filter.id) ? "default" : "secondary"}
-                  className={`cursor-pointer ${selectedFilters.includes(filter.id) ? '' : filter.color}`}
+                  className={`cursor-pointer text-xs ${selectedFilters.includes(filter.id) ? '' : filter.color}`}
                   onClick={() => toggleFilter(filter.id)}
                 >
                   {filter.label}
@@ -424,12 +446,12 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
           </div>
 
           {/* Sort Options */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
             <span className="text-sm text-muted-foreground">ترتيب حسب:</span>
             <select 
               value={sortBy} 
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-background border border-input rounded-md px-3 py-1 text-sm"
+              className="bg-background border border-input rounded-md px-3 py-1 text-sm w-full sm:w-auto"
             >
               <option value="price_low">⚡ الأقل سعراً</option>
               <option value="price_high">💰 الأغلى سعراً</option>
@@ -443,28 +465,28 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
 
         {/* Food Items Grid */}
         {!isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {sortedItems.map((item) => (
               <Card key={item.id} className="hover:shadow-lg transition-shadow glass-card">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{item.name}</CardTitle>
-                      <CardDescription className="text-sm text-muted-foreground">
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="flex-1 min-w-0">
+                      <CardTitle className="text-base sm:text-lg truncate">{item.name}</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm text-muted-foreground">
                         {getCategoryLabel(item.category)}
                       </CardDescription>
-                      <p className="text-sm mt-2">{item.description}</p>
+                      <p className="text-xs sm:text-sm mt-2 line-clamp-2">{item.description}</p>
                     </div>
-                    <div className="text-left">
-                      <p className="text-2xl font-bold text-primary">{item.price}</p>
+                    <div className="text-left shrink-0">
+                      <p className="text-lg sm:text-2xl font-bold text-primary">{item.price}</p>
                       <p className="text-xs text-muted-foreground">جنيه</p>
                     </div>
                   </div>
                 </CardHeader>
                 
-                <CardContent className="space-y-4">
+                <CardContent className="p-4 sm:p-6 pt-0 space-y-3 sm:space-y-4">
                   {/* Nutritional Info */}
-                  <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm">
                     <div className="flex items-center gap-1">
                       <span>📊</span>
                       <span>{item.calories} سعرة</span>
@@ -507,7 +529,7 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
                   </div>
 
                   {/* Action Buttons */}
-                  <div className={`grid gap-2 ${isMealPlanMode ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                  <div className={`grid gap-2 ${isMealPlanMode ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
                     {!isMealPlanMode && (
                       <Dialog>
                         <DialogTrigger asChild>
