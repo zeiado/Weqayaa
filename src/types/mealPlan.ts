@@ -10,6 +10,7 @@ export enum MealType {
 
 export interface MealPlanFoodItem {
   id: number;
+  mealPlanFoodItemId?: number;
   name: string;
   description: string;
   category: number;
@@ -40,16 +41,14 @@ export interface MealPlan {
 export interface CreateMealPlanRequest {
   date: string;
   mealType: MealType;
-  foodItemId: number;
-  menuFoodItemId: number;
+  menueId: number;
   quantity: number;
 }
 
 export interface UpdateMealPlanRequest {
   date: string;
   mealType: MealType;
-  foodItemId: number;
-  menuFoodItemId: number;
+  menueId: number;
   quantity: number;
 }
 

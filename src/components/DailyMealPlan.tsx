@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Plus, ArrowLeft, Loader2, Target, Zap, Activity, Droplets, Leaf, Utensils } from 'lucide-react';
+import { Calendar, Plus, ArrowLeft, Loader2, Target, Zap, Activity, Droplets, Leaf, Utensils, Clock, Sparkles } from 'lucide-react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { FoodItemsTable } from './FoodItemsTable';
@@ -152,6 +152,39 @@ export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafe
     );
   };
 
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState<MealType>(MealType.Breakfast);
+
+  const generateMealPlan = async () => {
+    try {
+      setIsGenerating(true);
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('يجب تسجيل الدخول أولاً لإنشاء خطة وجبة');
+      }
+      const dateIso = new Date(selectedDate).toISOString();
+      const res = await mealPlanApi.createMealPlan({
+        date: dateIso,
+        mealType: selectedMealType,
+        menueId: 0,
+        quantity: 0,
+      });
+      toast({
+        title: 'تم إنشاء خطة الوجبة',
+        description: `${getMealTypeLabel(selectedMealType)} ليوم ${selectedDate}`,
+      });
+      await fetchMealPlans();
+    } catch (error) {
+      toast({
+        title: 'خطأ في إنشاء الخطة',
+        description: error instanceof Error ? error.message : 'حدث خطأ غير متوقع',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-wellness">
       <Header 
@@ -230,23 +263,61 @@ export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafe
           </Card>
         )}
 
-        {/* Create Meal Plan Button */}
+        {/* Generate or Build Meal Plan */}
         <Card className="glass-card mb-6">
           <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="text-4xl mb-4">🍽️</div>
-              <h3 className="text-xl font-semibold mb-2">إنشاء خطة الوجبات</h3>
-              <p className="text-muted-foreground mb-6">
-                اختر من قائمة الكافتيريا وأضف الأطعمة المفضلة لوجباتك اليومية
-              </p>
-              <Button 
-                onClick={onOpenCafeteria}
-                className="bg-gradient-primary text-lg px-8 py-6 rounded-2xl"
-                size="lg"
-              >
-                <Utensils className="w-6 h-6 ml-2" />
-                إنشاء خطة الوجبات
-              </Button>
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Generate via backend */}
+              <div className="p-4 rounded-lg border">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  توليد تلقائي لخطة الوجبة
+                </h3>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-primary" />
+                    <Label className="text-sm">نوع الوجبة:</Label>
+                  </div>
+                  <select
+                    className="bg-background border border-input rounded-md px-3 py-2 text-sm"
+                    value={selectedMealType}
+                    onChange={(e) => setSelectedMealType(parseInt(e.target.value) as MealType)}
+                  >
+                    {Object.values(MealType).filter((v) => typeof v === 'number').map((mt) => (
+                      <option key={mt as number} value={mt as number}>
+                        {getMealTypeLabel(mt as MealType)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <Button onClick={generateMealPlan} disabled={isGenerating} className="bg-gradient-primary">
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                      جاري التوليد...
+                    </>
+                  ) : (
+                    <>
+                      بدء التوليد
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Build manually via cafeteria */}
+              <div className="p-4 rounded-lg border">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <Utensils className="w-4 h-4 text-primary" />
+                  إنشاء خطة الوجبات يدوياً
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">اختر من قائمة الكافتيريا وأضف الأطعمة المفضلة</p>
+                <Button 
+                  onClick={onOpenCafeteria}
+                  variant="outline"
+                >
+                  فتح قائمة الكافتيريا
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

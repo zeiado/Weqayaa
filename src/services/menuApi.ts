@@ -43,15 +43,23 @@ class MenuApiService {
     }
   }
 
-  async getMenus(date: string): Promise<MenuResponse[]> {
+  async getMenus(
+    date: string,
+    options?: { category?: number; available?: number; page?: number; pageSize?: number }
+  ): Promise<MenuResponse[]> {
     const formattedDate = new Date(date).toISOString();
-    return this.makeRequest<MenuResponse[]>(`/Nutrition/menus?date=${formattedDate}`, {
+    const params = new URLSearchParams({ date: formattedDate });
+    if (options?.category != null) params.set('category', String(options.category));
+    if (options?.available != null) params.set('available', String(options.available));
+    if (options?.page != null) params.set('page', String(options.page));
+    if (options?.pageSize != null) params.set('pageSize', String(options.pageSize));
+    return this.makeRequest<MenuResponse[]>(`/Nutrition/menus?${params.toString()}`, {
       method: 'GET',
     });
   }
 
-  async getMenuItem(menuId: number): Promise<MenuItem> {
-    return this.makeRequest<MenuItem>(`/Nutrition/menus/${menuId}`, {
+  async getMenuItem(menuId: number): Promise<MenuResponse> {
+    return this.makeRequest<MenuResponse>(`/Nutrition/menus/${menuId}`, {
       method: 'GET',
     });
   }

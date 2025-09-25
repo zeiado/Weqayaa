@@ -49,6 +49,7 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
   const [selectedLocation, setSelectedLocation] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<number | undefined>(undefined);
   const [sortBy, setSortBy] = useState('price_low');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [showPriceComparison, setShowPriceComparison] = useState<MenuItem | null>(null);
@@ -79,12 +80,17 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
   // Fetch menus data
   useEffect(() => {
     fetchMenus();
-  }, [selectedDate]);
+  }, [selectedDate, categoryFilter]);
 
   const fetchMenus = async () => {
     try {
       setIsLoading(true);
-      const data = await menuApi.getMenus(selectedDate);
+      const data = await menuApi.getMenus(selectedDate, {
+        category: categoryFilter,
+        available: 1,
+        page: 1,
+        pageSize: 10,
+      });
       setMenus(data);
       
       // Set first location as selected if available
@@ -104,16 +110,43 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
   };
 
   const toggleFilter = (filterId: string) => {
-    setSelectedFilters(prev => 
-      prev.includes(filterId) 
-        ? prev.filter(f => f !== filterId)
-        : [...prev, filterId]
-    );
+    // Only one category filter at a time for server-side filtering
+    if (filterId === 'all') {
+      setSelectedFilters(['all']);
+      setCategoryFilter(undefined);
+      return;
+    }
+    const map: Record<string, number> = {
+      main: 1,
+      salads: 2,
+      soups: 3,
+      drinks: 4,
+      desserts: 5,
+    };
+    setSelectedFilters([filterId]);
+    setCategoryFilter(map[filterId]);
   };
 
   const getPriceComparison = (itemName: string) => {
     const allItems = menus.flatMap(loc => loc.foodItems.filter(item => item.name === itemName));
     return allItems.sort((a, b) => a.price - b.price);
+  };
+
+  const getOrCreateMealPlanId = async (): Promise<number> => {
+    const dateIso = new Date(selectedDate).toISOString();
+    // Try get existing plan for this date and meal type
+    const plans = await mealPlanApi.getMealPlans(dateIso, dateIso);
+    const existing = plans.find(p => p.mealType === selectedMealType);
+    if (existing) return existing.id;
+
+    // Create empty plan for this meal type
+    const created = await mealPlanApi.createMealPlan({
+      date: dateIso,
+      mealType: selectedMealType,
+      menueId: 0,
+      quantity: 0,
+    });
+    return created.id;
   };
 
   const addToMealPlan = async (item: MenuItem) => {
@@ -159,33 +192,31 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         throw new Error('الكمية مطلوبة ويجب أن تكون بين 1 و 10');
       }
 
-      const mealPlanData: CreateMealPlanRequest = {
-        date: new Date(selectedDate).toISOString(),
-        mealType: selectedMealType,
-        foodItemId: item.id, // This might be the meal plan food item ID
-        menuFoodItemId: item.id, // This is the menu food item ID
-        quantity: selectedQuantity
-      };
+      // Ensure there's a meal plan for this date and meal type
+      const mealPlanId = await getOrCreateMealPlanId();
 
-      console.log('Creating meal plan with data:', mealPlanData);
-      console.log('Selected date:', selectedDate);
-      console.log('Selected meal type:', selectedMealType);
-      console.log('Item details:', item);
-      console.log('Food item ID being sent:', item.id, 'Type:', typeof item.id);
-      console.log('Menu food item ID:', item.id, 'Quantity:', selectedQuantity);
-      
-      const result = await mealPlanApi.createMealPlan(mealPlanData);
-      console.log('Meal plan created successfully:', result);
+      // Fetch the authoritative menu details to retrieve the correct menueFoodItemId
+      if (!currentLocation) {
+        throw new Error('تعذر تحديد قائمة اليوم الحالية');
+      }
+      const menuDetails = await menuApi.getMenuItem(currentLocation.id);
+      const detailedItem = menuDetails.foodItems.find(fi => fi.name === item.name) 
+        || menuDetails.foodItems.find(fi => fi.description === item.description);
+      if (!detailedItem) {
+        throw new Error('تعذر العثور على العنصر المطلوب في تفاصيل القائمة');
+      }
+
+      // Add specific menu item to the meal plan using menueFoodItemId from details
+      const updatedPlan = await mealPlanApi.addItem(mealPlanId, detailedItem.id);
+      console.log('Meal plan item added successfully:', updatedPlan);
       
       toast({
         title: "تم إضافة الطعام لخطة الوجبات",
-        description: `تم إضافة ${selectedQuantity} حصة من ${item.name} إلى ${getMealTypeLabel(selectedMealType)}`,
+        description: `تمت إضافة ${item.name} إلى ${getMealTypeLabel(selectedMealType)} بتاريخ ${selectedDate}`,
       });
       
       // Notify parent component to refresh meal plan
-      if (onMealPlanUpdated) {
-        onMealPlanUpdated();
-      }
+      if (onMealPlanUpdated) onMealPlanUpdated();
     } catch (error) {
       console.error('Error adding to meal plan:', error);
       
@@ -197,6 +228,8 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         // If it's a food item not found error, provide more helpful message
         if (error.message.includes('not found') || error.message.includes('غير موجود')) {
           errorMessage = `العنصر "${item.name}" غير متوفر حالياً. يرجى تحديث القائمة والمحاولة مرة أخرى.`;
+        } else if (error.message.toLowerCase().includes('not available')) {
+          errorMessage = `"${item.name}" غير متاح حالياً. قم بتحديث التاريخ أو الفلترة (المتاح فقط) ثم حاول مرة أخرى.`;
         }
       }
       

@@ -76,14 +76,22 @@ class MealPlanApiService {
   }
 
   async createMealPlan(mealPlanData: CreateMealPlanRequest): Promise<MealPlanResponse> {
-    console.log('Making request to create meal plan:', mealPlanData);
+    // Backend expects: { date, mealType, menueId, quantity }
+    const payload = {
+      date: mealPlanData.date,
+      mealType: mealPlanData.mealType,
+      menueId: mealPlanData.menueId,
+      quantity: mealPlanData.quantity,
+    };
+    console.log('Making request to create meal plan:', payload);
     return this.makeRequest<MealPlanResponse>('/Nutrition/meal-plan', {
       method: 'POST',
-      body: JSON.stringify(mealPlanData),
+      body: JSON.stringify(payload),
     });
   }
 
   async getMealPlans(fromDate: string, toDate: string): Promise<MealPlanResponse[]> {
+    // Use plural route for GET to avoid 405
     return this.makeRequest<MealPlanResponse[]>(`/Nutrition/meal-plans?fromDate=${fromDate}&toDate=${toDate}`, {
       method: 'GET',
     });
@@ -101,6 +109,16 @@ class MealPlanApiService {
     console.log('Making request to delete meal plan:', mealPlanId);
     return this.makeRequest<void>(`/Nutrition/meal-plan/${mealPlanId}`, {
       method: 'DELETE',
+    });
+  }
+
+  async addItem(mealPlanId: number, menuFoodItemId: number): Promise<MealPlanResponse> {
+    // Backend expects menueFoodItemId as a query parameter (not in body)
+    const params = new URLSearchParams({ menuFoodItemId: String(menuFoodItemId) });
+    const endpoint = `/Nutrition/meal-plan/${mealPlanId}/items?${params.toString()}`;
+    console.log('Adding item to meal plan via query:', { mealPlanId, menuFoodItemId: menuFoodItemId });
+    return this.makeRequest<MealPlanResponse>(endpoint, {
+      method: 'POST',
     });
   }
 
