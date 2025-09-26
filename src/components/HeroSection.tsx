@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { WeqayaLogo } from "./WeqayaLogo";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { Users, Utensils, Brain, Star } from "lucide-react";
+import { Users, Utensils, Brain, Star, Play, CheckCircle, ArrowRight, Smartphone, MessageCircle, Calendar } from "lucide-react";
 import weqayaHero from "@/assets/weqaya-hero.jpg";
 
 export const HeroSection = ({ 
@@ -50,9 +52,133 @@ export const HeroSection = ({
             >
               ابدأ رحلة الوقاية المجانية
             </Button>
-            <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-2xl w-full sm:w-auto">
-              شاهد كيف يعمل
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-2xl w-full sm:w-auto">
+                  <Play className="w-4 h-4 ml-2" />
+                  شاهد كيف يعمل
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-center text-primary mb-6">
+                    كيف يعمل تطبيق وقاية؟
+                  </DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-8">
+                  {/* Step 1 */}
+                  <div className="flex flex-col md:flex-row gap-6 items-center">
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        1
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center md:text-right">
+                      <h3 className="text-xl font-semibold mb-3 text-foreground">سجل بياناتك الشخصية</h3>
+                      <p className="text-muted-foreground mb-4">
+                        أدخل معلوماتك الأساسية مثل العمر، الجنس، الجامعة، والهدف الصحي لتحصل على توصيات مخصصة
+                      </p>
+                      <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-primary">
+                        <Smartphone className="w-4 h-4" />
+                        <span>عملية بسيطة تستغرق دقيقتين</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="flex flex-col md:flex-row gap-6 items-center">
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-secondary rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        2
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center md:text-right">
+                      <h3 className="text-xl font-semibold mb-3 text-foreground">استكشف قائمة الكافتيريا</h3>
+                      <p className="text-muted-foreground mb-4">
+                        تصفح قائمة الطعام اليومية في كافتيريا جامعتك واحصل على تحليل غذائي فوري لكل وجبة
+                      </p>
+                      <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-secondary">
+                        <Utensils className="w-4 h-4" />
+                        <span>تحليل السعرات والبروتينات والكربوهيدرات</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="flex flex-col md:flex-row gap-6 items-center">
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        3
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center md:text-right">
+                      <h3 className="text-xl font-semibold mb-3 text-foreground">احصل على استشارة ذكية</h3>
+                      <p className="text-muted-foreground mb-4">
+                        اسأل المستشار الذكي أي سؤال غذائي واحصل على إجابات فورية مبنية على أحدث الأبحاث العلمية
+                      </p>
+                      <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-primary">
+                        <MessageCircle className="w-4 h-4" />
+                        <span>متاح 24/7 - إجابات فورية</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="flex flex-col md:flex-row gap-6 items-center">
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-secondary rounded-full flex items-center justify-center text-white text-xl font-bold">
+                        4
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center md:text-right">
+                      <h3 className="text-xl font-semibold mb-3 text-foreground">تابع تقدمك الصحي</h3>
+                      <p className="text-muted-foreground mb-4">
+                        احصل على تقارير دورية عن تقدمك الصحي ونصائح مخصصة لتحسين عاداتك الغذائية
+                      </p>
+                      <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-secondary">
+                        <Calendar className="w-4 h-4" />
+                        <span>تقارير أسبوعية وشهرية</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Benefits Section */}
+                  <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-6 mt-8">
+                    <h3 className="text-xl font-semibold text-center mb-6 text-foreground">لماذا تختار وقاية؟</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                        <span className="text-sm">مجاني 100% - لا توجد رسوم مخفية</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                        <span className="text-sm">مصمم خصيصاً لطلاب الجامعات</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                        <span className="text-sm">ذكاء اصطناعي متقدم</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+                        <span className="text-sm">دعم متواصل من فريق التغذية</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="text-center pt-6">
+                    <Button 
+                      className="bg-gradient-primary hover:shadow-lg transition-smooth text-lg px-8 py-4 rounded-2xl"
+                      onClick={onStartRegistration}
+                    >
+                      ابدأ رحلتك الآن
+                      <ArrowRight className="w-5 h-5 mr-2" />
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
