@@ -76,7 +76,7 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="w-4 h-4" />
-                +20 123 456 7890
+                +20 1278747645
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4" />
@@ -89,7 +89,7 @@ export const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            © 2024 وقاية. جميع الحقوق محفوظة.
+            © 2025 وقاية. جميع الحقوق محفوظة.
           </p>
           <div className="flex gap-4 mt-4 md:mt-0">
             <Button variant="link" className="p-0 h-auto text-sm text-muted-foreground hover:text-primary">

@@ -20,7 +20,20 @@ import {
   Loader2,
   TrendingUp,
   Scale,
-  Ruler
+  Ruler,
+  Award,
+  Star,
+  Calendar,
+  Clock,
+  Sparkles,
+  Zap,
+  Droplets,
+  Flame,
+  ArrowRight,
+  CheckCircle,
+  Crown,
+  Shield,
+  Trophy
 } from "lucide-react";
 import { nutritionApi } from "@/services/nutritionApi";
 import { 
@@ -147,25 +160,131 @@ export const UserProfile = ({ onBack, onOpenChat }: UserProfileProps) => {
   const bmiCategory = getBMICategory(bmi);
 
   return (
-    <div className="min-h-screen bg-gradient-wellness">
+    <div className="min-h-screen bg-gradient-wellness relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-10 w-32 h-32 bg-primary-glow/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 left-10 w-40 h-40 bg-secondary-glow/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 w-60 h-60 bg-accent-glow/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      </div>
+
       <Header onBack={onBack} showBackButton={true} onOpenChat={onOpenChat} title="الملف الشخصي" />
       
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-8 relative z-10">
+        {/* Profile Header */}
+        <div className="text-center mb-8">
+          <div className="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <User className="w-12 h-12 text-white" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+            الملف الشخصي
+          </h1>
+          <p className="text-muted-foreground">إدارة معلوماتك الصحية والأهداف</p>
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Profile Overview */}
-          <div className="lg:col-span-1">
-            <Card className="glass-card">
-              <CardHeader>
+          {/* Enhanced Profile Overview */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* BMI Card */}
+            <Card className="glass-card p-6 text-center group hover:scale-105 transition-all duration-300 bg-background/80 backdrop-blur-sm">
+              <div className="relative">
+                <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:rotate-12 transition-transform duration-300">
+                  <Target className="w-10 h-10 text-white" />
+                </div>
+                <div className="text-4xl font-bold text-primary mb-2">{bmi}</div>
+                <div className="text-sm text-foreground/80 mb-3">مؤشر كتلة الجسم</div>
+                <Badge className={`${bmiCategory.color} text-sm px-3 py-1`}>
+                  {bmiCategory.label}
+                </Badge>
+              </div>
+            </Card>
+
+            {/* Health Stats */}
+            <Card className="glass-card p-6 bg-background/80 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg text-foreground">
+                  <Activity className="w-5 h-5 text-primary" />
+                  الإحصائيات الصحية
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-primary/10 dark:bg-primary/20 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Scale className="w-5 h-5 text-primary" />
+                    <span className="text-sm font-medium text-foreground">الوزن</span>
+                  </div>
+                  <span className="font-bold text-primary">{profile.weight} كجم</span>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 bg-secondary/10 dark:bg-secondary/20 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Ruler className="w-5 h-5 text-secondary" />
+                    <span className="text-sm font-medium text-foreground">الطول</span>
+                  </div>
+                  <span className="font-bold text-secondary">{profile.height} سم</span>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 bg-accent/10 dark:bg-accent/20 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Flame className="w-5 h-5 text-accent" />
+                    <span className="text-sm font-medium text-foreground">السعرات اليومية</span>
+                  </div>
+                  <span className="font-bold text-accent">{profile.dailyCalorieRequirement}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Achievements */}
+            <Card className="glass-card p-6 bg-background/80 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg text-foreground">
+                  <Trophy className="w-5 h-5 text-yellow-500" />
+                  الإنجازات
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                  <Star className="w-5 h-5 text-yellow-500 fill-current" />
+                  <div>
+                    <div className="text-sm font-medium text-foreground">عضو جديد</div>
+                    <div className="text-xs text-foreground/70">انضممت إلى وقاية</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <div>
+                    <div className="text-sm font-medium text-foreground">ملف مكتمل</div>
+                    <div className="text-xs text-foreground/70">أكملت بياناتك الشخصية</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <Shield className="w-5 h-5 text-blue-500" />
+                  <div>
+                    <div className="text-sm font-medium text-foreground">مستوى الصحة</div>
+                    <div className="text-xs text-foreground/70">حالة صحية جيدة</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Enhanced Profile Details */}
+          <div className="lg:col-span-2">
+            <Card className="glass-card p-6 bg-background/80 backdrop-blur-sm">
+              <CardHeader className="pb-6">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="w-5 h-5 text-primary" />
-                    نظرة عامة
+                  <CardTitle className="flex items-center gap-3 text-xl text-foreground">
+                    <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
+                      <Target className="w-5 h-5 text-white" />
+                    </div>
+                    تفاصيل الملف الشخصي
                   </CardTitle>
                   {!isEditing && (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setIsEditing(true)}
+                      className="border-primary/30 text-primary hover:bg-primary/10"
                     >
                       <Edit3 className="w-4 h-4 ml-2" />
                       تعديل
@@ -173,102 +292,59 @@ export const UserProfile = ({ onBack, onOpenChat }: UserProfileProps) => {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* BMI Card */}
-                <div className="text-center p-4 bg-gradient-primary rounded-lg text-white">
-                  <div className="text-3xl font-bold">{bmi}</div>
-                  <div className="text-sm opacity-90">مؤشر كتلة الجسم</div>
-                  <Badge className={`mt-2 ${bmiCategory.color}`}>
-                    {bmiCategory.label}
-                  </Badge>
-                </div>
-
-                {/* Stats */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Scale className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">الوزن</span>
-                    </div>
-                    <span className="font-semibold">{profile.weight} كجم</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Ruler className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">الطول</span>
-                    </div>
-                    <span className="font-semibold">{profile.height} سم</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">السعرات اليومية</span>
-                    </div>
-                    <span className="font-semibold">{profile.dailyCalorieRequirement}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Profile Details */}
-          <div className="lg:col-span-2">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="w-5 h-5 text-primary" />
-                  تفاصيل الملف الشخصي
-                </CardTitle>
-              </CardHeader>
               <CardContent>
                 {isEditing ? (
-                  <div className="space-y-6">
+                  <div className="space-y-8">
                     {/* Basic Info */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="age" className="text-right block mb-2">العمر</Label>
-                        <Input
-                          id="age"
-                          type="number"
-                          value={editData.age || ''}
-                          onChange={(e) => setEditData(prev => ({ ...prev, age: parseInt(e.target.value) }))}
-                          className="text-right"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="weight" className="text-right block mb-2">الوزن (كجم)</Label>
-                        <Input
-                          id="weight"
-                          type="number"
-                          step="0.1"
-                          value={editData.weight || ''}
-                          onChange={(e) => setEditData(prev => ({ ...prev, weight: parseFloat(e.target.value) }))}
-                          className="text-right"
-                        />
+                    <div className="bg-primary/10 dark:bg-primary/20 rounded-lg p-6">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-foreground">
+                        <User className="w-5 h-5 text-primary" />
+                        المعلومات الأساسية
+                      </h3>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                          <Label htmlFor="age" className="text-right block mb-3 font-medium">العمر</Label>
+                          <Input
+                            id="age"
+                            type="number"
+                            value={editData.age || ''}
+                            onChange={(e) => setEditData(prev => ({ ...prev, age: parseInt(e.target.value) }))}
+                            className="text-right border-primary/20 focus:border-primary"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="weight" className="text-right block mb-3 font-medium">الوزن (كجم)</Label>
+                          <Input
+                            id="weight"
+                            type="number"
+                            step="0.1"
+                            value={editData.weight || ''}
+                            onChange={(e) => setEditData(prev => ({ ...prev, weight: parseFloat(e.target.value) }))}
+                            className="text-right border-primary/20 focus:border-primary"
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <Label htmlFor="height" className="text-right block mb-2">الطول (سم)</Label>
+                        <Label htmlFor="height" className="text-right block mb-3 font-medium">الطول (سم)</Label>
                         <Input
                           id="height"
                           type="number"
                           step="0.1"
                           value={editData.height || ''}
                           onChange={(e) => setEditData(prev => ({ ...prev, height: parseFloat(e.target.value) }))}
-                          className="text-right"
+                          className="text-right border-primary/20 focus:border-primary"
                         />
                       </div>
                       <div>
-                        <Label className="text-right block mb-2">الهدف الصحي</Label>
+                        <Label className="text-right block mb-3 font-medium">الهدف الصحي</Label>
                         <Select 
                           value={editData.healthGoal?.toString() || ''} 
                           onValueChange={(value) => setEditData(prev => ({ ...prev, healthGoal: parseInt(value) as HealthGoal }))}
                         >
-                          <SelectTrigger className="text-right">
+                          <SelectTrigger className="text-right border-primary/20 focus:border-primary">
                             <SelectValue placeholder="اختر هدفك" />
                           </SelectTrigger>
                           <SelectContent>
@@ -286,13 +362,16 @@ export const UserProfile = ({ onBack, onOpenChat }: UserProfileProps) => {
                       </div>
                     </div>
 
-                    <div>
-                      <Label className="text-right block mb-2">مستوى النشاط</Label>
+                    <div className="bg-secondary/10 dark:bg-secondary/20 rounded-lg p-6">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-foreground">
+                        <Activity className="w-5 h-5 text-secondary" />
+                        مستوى النشاط
+                      </h3>
                       <Select 
                         value={editData.activityLevel?.toString() || ''} 
                         onValueChange={(value) => setEditData(prev => ({ ...prev, activityLevel: parseInt(value) as ActivityLevel }))}
                       >
-                        <SelectTrigger className="text-right">
+                        <SelectTrigger className="text-right border-secondary/20 focus:border-secondary">
                           <SelectValue placeholder="اختر مستوى نشاطك" />
                         </SelectTrigger>
                         <SelectContent>
@@ -306,13 +385,16 @@ export const UserProfile = ({ onBack, onOpenChat }: UserProfileProps) => {
                     </div>
 
                     {/* Health Conditions */}
-                    <div>
-                      <Label className="text-right block mb-3">الحالات الصحية</Label>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-accent/10 dark:bg-accent/20 rounded-lg p-6">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-foreground">
+                        <Heart className="w-5 h-5 text-accent" />
+                        الحالات الصحية
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {Object.entries(HealthConditionType)
                           .filter(([key, value]) => typeof value === 'number' && value !== 0)
                           .map(([key, value]) => (
-                            <div key={value} className="flex items-center space-x-2">
+                            <div key={value} className="flex items-center space-x-3 p-3 bg-background/50 dark:bg-background/80 rounded-lg border border-accent/20">
                               <Checkbox
                                 id={`edit-condition-${value}`}
                                 checked={editData.healthConditions?.includes(value) || false}
@@ -331,7 +413,7 @@ export const UserProfile = ({ onBack, onOpenChat }: UserProfileProps) => {
                                   }
                                 }}
                               />
-                              <Label htmlFor={`edit-condition-${value}`} className="text-sm cursor-pointer">
+                              <Label htmlFor={`edit-condition-${value}`} className="text-sm cursor-pointer font-medium text-foreground">
                                 {getHealthConditionLabel(value as HealthConditionType)}
                               </Label>
                             </div>
@@ -339,21 +421,21 @@ export const UserProfile = ({ onBack, onOpenChat }: UserProfileProps) => {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 pt-4">
+                    {/* Enhanced Action Buttons */}
+                    <div className="flex gap-4 pt-6">
                       <Button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="bg-gradient-primary flex-1"
+                        className="bg-gradient-primary flex-1 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                       >
                         {isSaving ? (
                           <>
-                            <Loader2 className="w-4 h-4 animate-spin ml-2" />
+                            <Loader2 className="w-5 h-5 animate-spin ml-2" />
                             جاري الحفظ...
                           </>
                         ) : (
                           <>
-                            <Save className="w-4 h-4 ml-2" />
+                            <Save className="w-5 h-5 ml-2" />
                             حفظ التغييرات
                           </>
                         )}
@@ -362,38 +444,39 @@ export const UserProfile = ({ onBack, onOpenChat }: UserProfileProps) => {
                         variant="outline"
                         onClick={handleCancel}
                         disabled={isSaving}
-                        className="flex-1"
+                        className="flex-1 py-3 text-base font-semibold border-primary/30 text-primary hover:bg-primary/10"
                       >
-                        <X className="w-4 h-4 ml-2" />
+                        <X className="w-5 h-5 ml-2" />
                         إلغاء
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-6">
-                    {/* Display Mode */}
+                  <div className="space-y-8">
+                    {/* Enhanced Display Mode */}
                     <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <Label className="text-sm text-muted-foreground">العمر</Label>
-                        <p className="text-lg font-semibold">{profile.age} سنة</p>
+                      <div className="bg-primary/10 dark:bg-primary/20 rounded-lg p-4">
+                        <Label className="text-sm text-foreground/70 mb-2 block">العمر</Label>
+                        <p className="text-xl font-bold text-primary">{profile.age} سنة</p>
                       </div>
-                      <div>
-                        <Label className="text-sm text-muted-foreground">الهدف الصحي</Label>
-                        <p className="text-lg font-semibold">{getHealthGoalLabel(profile.healthGoal)}</p>
+                      <div className="bg-secondary/10 dark:bg-secondary/20 rounded-lg p-4">
+                        <Label className="text-sm text-foreground/70 mb-2 block">الهدف الصحي</Label>
+                        <p className="text-xl font-bold text-secondary">{getHealthGoalLabel(profile.healthGoal)}</p>
                       </div>
                     </div>
 
-                    <div>
-                      <Label className="text-sm text-muted-foreground">مستوى النشاط</Label>
-                      <p className="text-lg font-semibold">{getActivityLevelLabel(profile.activityLevel)}</p>
+                    <div className="bg-accent/10 dark:bg-accent/20 rounded-lg p-4">
+                      <Label className="text-sm text-foreground/70 mb-2 block">مستوى النشاط</Label>
+                      <p className="text-xl font-bold text-accent">{getActivityLevelLabel(profile.activityLevel)}</p>
                     </div>
 
                     {profile.healthConditions && profile.healthConditions.length > 0 && (
-                      <div>
-                        <Label className="text-sm text-muted-foreground mb-3 block">الحالات الصحية</Label>
-                        <div className="flex flex-wrap gap-2">
+                      <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6">
+                        <Label className="text-sm text-foreground/70 mb-4 block font-medium">الحالات الصحية</Label>
+                        <div className="flex flex-wrap gap-3">
                           {profile.healthConditions.map(condition => (
-                            <Badge key={condition} variant="secondary">
+                            <Badge key={condition} variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 text-sm px-3 py-1">
+                              <Heart className="w-3 h-3 ml-1" />
                               {getHealthConditionLabel(condition as HealthConditionType)}
                             </Badge>
                           ))}
@@ -401,14 +484,20 @@ export const UserProfile = ({ onBack, onOpenChat }: UserProfileProps) => {
                       </div>
                     )}
 
-                    <div className="pt-4 border-t border-border">
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>تاريخ الإنشاء</span>
-                        <span>{new Date(profile.createdAt).toLocaleDateString('ar-EG')}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground mt-2">
-                        <span>آخر تحديث</span>
-                        <span>{new Date(profile.updatedAt).toLocaleDateString('ar-EG')}</span>
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-foreground">
+                        <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                        معلومات الحساب
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-3 bg-background/50 dark:bg-background/80 rounded-lg">
+                          <span className="text-sm text-foreground/70">تاريخ الإنشاء</span>
+                          <span className="font-semibold text-foreground">{new Date(profile.createdAt).toLocaleDateString('ar-EG')}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-background/50 dark:bg-background/80 rounded-lg">
+                          <span className="text-sm text-foreground/70">آخر تحديث</span>
+                          <span className="font-semibold text-foreground">{new Date(profile.updatedAt).toLocaleDateString('ar-EG')}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

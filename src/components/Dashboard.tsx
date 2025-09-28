@@ -19,7 +19,19 @@ import {
   Zap,
   Clock,
   ArrowLeft,
-  User
+  User,
+  Heart,
+  Droplets,
+  Target,
+  Award,
+  Sparkles,
+  Star,
+  ArrowRight,
+  Flame,
+  Apple,
+  Coffee,
+  Moon,
+  Sun
 } from "lucide-react";
 
 export const Dashboard = ({ 
@@ -93,7 +105,14 @@ export const Dashboard = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-wellness">
+    <div className="min-h-screen bg-gradient-wellness relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-10 w-32 h-32 bg-primary-glow/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 left-10 w-40 h-40 bg-secondary-glow/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 w-60 h-60 bg-accent-glow/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      </div>
+
       <Header 
         onBack={onBack}
         showBackButton={true}
@@ -102,99 +121,180 @@ export const Dashboard = ({
         onOpenProfile={onOpenProfile}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-4">
-          <Card className="glass-card p-3 sm:p-4 text-center">
-            <div className="text-lg sm:text-2xl font-bold text-primary">{nutritionGoals.calories.current}</div>
-            <div className="text-xs text-muted-foreground">سعرات اليوم</div>
-            <Progress 
-              value={(nutritionGoals.calories.current / nutritionGoals.calories.target) * 100} 
-              className="mt-2 h-1" 
-            />
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 relative z-10">
+        {/* Welcome Section with Time-based Greeting */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            {new Date().getHours() < 12 ? (
+              <Sun className="w-5 h-5 text-yellow-500" />
+            ) : new Date().getHours() < 18 ? (
+              <Sun className="w-5 h-5 text-orange-500" />
+            ) : (
+              <Moon className="w-5 h-5 text-blue-500" />
+            )}
+            <span className="text-sm text-muted-foreground">
+              {new Date().getHours() < 12 ? "صباح الخير" : new Date().getHours() < 18 ? "مساء الخير" : "مساء الخير"}
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            {displayName} 🌟
+          </h1>
+          <p className="text-muted-foreground mt-2">استمر في رحلتك نحو الصحة المثالية</p>
+        </div>
+
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <Card className="glass-card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40 bg-background/80 backdrop-blur-sm">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-3 group-hover:rotate-12 transition-transform duration-300">
+                <Flame className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">{nutritionGoals.calories.current}</div>
+              <div className="text-sm text-foreground/80 mb-3">سعرات اليوم</div>
+              <Progress 
+                value={(nutritionGoals.calories.current / nutritionGoals.calories.target) * 100} 
+                className="h-2 bg-primary/20" 
+              />
+              <div className="text-xs text-foreground/70 mt-2">
+                {nutritionGoals.calories.target - nutritionGoals.calories.current} سعرة متبقية
+              </div>
+            </div>
           </Card>
-          <Card className="glass-card p-3 sm:p-4 text-center">
-            <div className="text-lg sm:text-2xl font-bold text-secondary">{nutritionGoals.protein.current}g</div>
-            <div className="text-xs text-muted-foreground">بروتين</div>
-            <Progress 
-              value={(nutritionGoals.protein.current / nutritionGoals.protein.target) * 100} 
-              className="mt-2 h-1" 
-            />
+
+          <Card className="glass-card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300 border-secondary/20 hover:border-secondary/40 bg-background/80 backdrop-blur-sm">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-secondary rounded-full flex items-center justify-center mx-auto mb-3 group-hover:rotate-12 transition-transform duration-300">
+                <Activity className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-secondary mb-1">{nutritionGoals.protein.current}g</div>
+              <div className="text-sm text-foreground/80 mb-3">بروتين</div>
+              <Progress 
+                value={(nutritionGoals.protein.current / nutritionGoals.protein.target) * 100} 
+                className="h-2 bg-secondary/20" 
+              />
+              <div className="text-xs text-foreground/70 mt-2">
+                {nutritionGoals.protein.target - nutritionGoals.protein.current}g متبقي
+              </div>
+            </div>
           </Card>
-          <Card className="glass-card p-3 sm:p-4 text-center">
-            <div className="text-lg sm:text-2xl font-bold text-accent">{nutritionGoals.water.current}</div>
-            <div className="text-xs text-muted-foreground">أكواب مياه</div>
-            <Progress 
-              value={(nutritionGoals.water.current / nutritionGoals.water.target) * 100} 
-              className="mt-2 h-1" 
-            />
+
+          <Card className="glass-card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300 border-accent/20 hover:border-accent/40 bg-background/80 backdrop-blur-sm">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-accent rounded-full flex items-center justify-center mx-auto mb-3 group-hover:rotate-12 transition-transform duration-300">
+                <Droplets className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-accent mb-1">{nutritionGoals.water.current}</div>
+              <div className="text-sm text-foreground/80 mb-3">أكواب مياه</div>
+              <Progress 
+                value={(nutritionGoals.water.current / nutritionGoals.water.target) * 100} 
+                className="h-2 bg-accent/20" 
+              />
+              <div className="text-xs text-foreground/70 mt-2">
+                {nutritionGoals.water.target - nutritionGoals.water.current} كوب متبقي
+              </div>
+            </div>
           </Card>
         </div>
 
-        {/* AI Chat Quick Access */}
-        <Card className="glass-card p-4 sm:p-6 bg-gradient-primary text-white">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex-1">
-              <h3 className="font-semibold mb-2 text-base sm:text-lg">مستشار وقاية الذكي</h3>
-              <p className="text-sm text-white/80">اسأل أي سؤال عن التغذية الصحية</p>
+        {/* Enhanced AI Chat Section */}
+        <Card className="glass-card p-6 sm:p-8 bg-gradient-to-br from-primary via-primary/90 to-secondary text-white relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative z-10">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg sm:text-xl">مستشار وقاية الذكي</h3>
+                    <p className="text-white/80 text-sm">مدعوم بالذكاء الاصطناعي المتقدم</p>
+                  </div>
+                </div>
+                <p className="text-white/90 mb-4 leading-relaxed">
+                  احصل على استشارات غذائية فورية ومخصصة. اسأل عن أي شيء متعلق بالتغذية الصحية واللياقة البدنية
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-white/20 text-white text-xs">متاح 24/7</Badge>
+                  <Badge className="bg-white/20 text-white text-xs">إجابات فورية</Badge>
+                  <Badge className="bg-white/20 text-white text-xs">مخصص لك</Badge>
+                </div>
+              </div>
+              <Button 
+                variant="secondary" 
+                className="bg-white text-primary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={onOpenChat}
+              >
+                <MessageCircle className="w-5 h-5 ml-2" />
+                ابدأ المحادثة
+                <ArrowRight className="w-4 h-4 mr-2" />
+              </Button>
             </div>
-            <Button 
-              variant="secondary" 
-              className="bg-white/20 text-white border-white/30 hover:bg-white/30 w-full sm:w-auto"
-              onClick={onOpenChat}
-            >
-              <MessageCircle className="w-4 h-4 ml-2" />
-              ابدأ المحادثة
-            </Button>
           </div>
         </Card>
 
-        {/* Today's Recommended Meals */}
+        {/* Enhanced Today's Recommended Meals */}
         <div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
-            <h2 className="text-lg sm:text-xl font-bold text-foreground">وجبات اليوم المقترحة</h2>
-            <Button variant="outline" size="sm" className="w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                وجبات اليوم المقترحة
+              </h2>
+              <p className="text-muted-foreground text-sm mt-1">اختر من أفضل الوجبات الصحية المتاحة</p>
+            </div>
+            <Button variant="outline" size="sm" className="w-full sm:w-auto border-primary/30 text-primary hover:bg-primary/10">
               <Calendar className="w-4 h-4 ml-2" />
               عرض الأسبوع
             </Button>
           </div>
           
-          <div className="space-y-3 sm:space-y-4">
+          <div className="grid gap-4 sm:gap-6">
             {todaysMeals.map((meal, index) => (
-              <Card key={index} className={`glass-card p-3 sm:p-4 ${!meal.available ? 'opacity-60' : ''}`}>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <Card key={index} className={`glass-card p-4 sm:p-6 group hover:scale-[1.02] transition-all duration-300 bg-background/80 ${!meal.available ? 'opacity-60' : 'hover:shadow-lg'}`}>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                      <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{meal.name}</h3>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
+                          {meal.name.includes('فول') ? <Apple className="w-5 h-5 text-white" /> : 
+                           meal.name.includes('سلطة') ? <Heart className="w-5 h-5 text-white" /> :
+                           <Coffee className="w-5 h-5 text-white" />}
+                        </div>
+                        <h3 className="font-bold text-foreground text-base sm:text-lg">{meal.name}</h3>
+                      </div>
                       {!meal.available && (
-                        <Badge variant="secondary" className="text-xs shrink-0">
+                        <Badge variant="secondary" className="text-xs shrink-0 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                           <Clock className="w-3 h-3 ml-1" />
                           غير متاح
                         </Badge>
                       )}
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
-                        {meal.calories} سعرة
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Activity className="w-3 h-3 sm:w-4 sm:h-4" />
-                        {meal.protein}g بروتين
-                      </span>
-                      <span>{meal.price} جنيه</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+                      <div className="flex items-center gap-2 text-foreground/80">
+                        <Zap className="w-4 h-4 text-primary" />
+                        <span>{meal.calories} سعرة</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-foreground/80">
+                        <Activity className="w-4 h-4 text-secondary" />
+                        <span>{meal.protein}g بروتين</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-foreground/80 col-span-2 sm:col-span-1">
+                        <span className="font-semibold text-foreground">{meal.price} جنيه</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                    <div className="text-center">
-                      <div className="text-xs sm:text-sm font-semibold text-secondary">⭐ {meal.rating}</div>
+                  <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      <span className="text-sm font-semibold text-foreground">{meal.rating}</span>
                     </div>
                     <Button 
                       size="sm" 
                       disabled={!meal.available}
-                      className="bg-gradient-primary shrink-0"
+                      className="bg-gradient-primary hover:shadow-lg transition-all duration-300 px-6"
                     >
-                      <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <Plus className="w-4 h-4 ml-2" />
+                      إضافة
                     </Button>
                   </div>
                 </div>
@@ -203,57 +303,99 @@ export const Dashboard = ({
           </div>
         </div>
 
-        {/* Premium Upgrade Banner */}
-        <Card className="glass-card p-4 sm:p-6 bg-gradient-secondary text-white">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <Crown className="w-4 h-4 sm:w-5 sm:h-5" />
-                <h3 className="font-semibold text-sm sm:text-base">ترقية لحساب وقاية المتقدم</h3>
+        {/* Enhanced Premium Upgrade Banner */}
+        <Card className="glass-card p-6 sm:p-8 bg-gradient-to-br from-secondary via-secondary/90 to-accent text-white relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative z-10">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <Crown className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg sm:text-xl">ترقية لحساب وقاية المتقدم</h3>
+                    <p className="text-white/80 text-sm">احصل على المزيد من المميزات</p>
+                  </div>
+                </div>
+                <p className="text-white/90 mb-4 leading-relaxed">
+                  استشارات غير محدودة + خطط غذائية مخصصة + تحليلات متقدمة + دعم أولوية
+                </p>
+                <div className="flex flex-wrap items-center gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold">50 جنيه/شهر</span>
+                    <span className="line-through text-white/60 text-sm">100 جنيه/شهر</span>
+                  </div>
+                  <Badge className="bg-white/20 text-white text-sm px-3 py-1">خصم 50%</Badge>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-white/20 text-white text-xs">استشارات غير محدودة</Badge>
+                  <Badge className="bg-white/20 text-white text-xs">خطط مخصصة</Badge>
+                  <Badge className="bg-white/20 text-white text-xs">تحليلات متقدمة</Badge>
+                </div>
               </div>
-              <p className="text-xs sm:text-sm text-white/80 mb-3">
-                استشارات غير محدودة + خطط غذائية مخصصة + تحليلات متقدمة
-              </p>
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
-                <span>50 جنيه/شهر</span>
-                <span className="line-through text-white/60">100 جنيه/شهر</span>
-                <Badge className="bg-white/20 text-white text-xs">خصم 50%</Badge>
-              </div>
+              <Button variant="secondary" className="bg-white text-secondary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                <Crown className="w-5 h-5 ml-2" />
+                ترقية الآن
+                <ArrowRight className="w-4 h-4 mr-2" />
+              </Button>
             </div>
-            <Button variant="secondary" className="bg-white text-secondary hover:bg-white/90 w-full sm:w-auto">
-              ترقية الآن
-            </Button>
           </div>
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-          {onOpenProgressReport && (
+        {/* Enhanced Quick Actions */}
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6">
+            الإجراءات السريعة
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+            {onOpenProgressReport && (
+              <Button 
+                variant="outline" 
+                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40 hover:bg-primary/5" 
+                onClick={onOpenProgressReport}
+              >
+                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-sm font-semibold">تقرير التقدم</span>
+              </Button>
+            )}
             <Button 
               variant="outline" 
-              className="p-4 sm:p-6 h-auto flex-col gap-2" 
-              onClick={onOpenProgressReport}
+              className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-secondary/20 hover:border-secondary/40 hover:bg-secondary/5" 
+              onClick={onOpenCafeteria}
             >
-              <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-              <span className="text-xs sm:text-sm">تقرير التقدم</span>
+              <div className="w-12 h-12 bg-gradient-secondary rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                <Utensils className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-semibold">قائمة الكافتيريا</span>
             </Button>
-          )}
-          <Button variant="outline" className="p-4 sm:p-6 h-auto flex-col gap-2" onClick={onOpenCafeteria}>
-            <Utensils className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
-            <span className="text-xs sm:text-sm">قائمة الكافتيريا</span>
-          </Button>
-          {onOpenMealPlan && (
-            <Button variant="outline" className="p-4 sm:p-6 h-auto flex-col gap-2" onClick={onOpenMealPlan}>
-              <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
-              <span className="text-xs sm:text-sm">خطة الوجبات</span>
-            </Button>
-          )}
-          {onOpenProfile && (
-            <Button variant="outline" className="p-4 sm:p-6 h-auto flex-col gap-2" onClick={onOpenProfile}>
-              <User className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
-              <span className="text-xs sm:text-sm">الملف الشخصي</span>
-            </Button>
-          )}
+            {onOpenMealPlan && (
+              <Button 
+                variant="outline" 
+                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-accent/20 hover:border-accent/40 hover:bg-accent/5" 
+                onClick={onOpenMealPlan}
+              >
+                <div className="w-12 h-12 bg-gradient-accent rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                  <Calendar className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-sm font-semibold">خطة الوجبات</span>
+              </Button>
+            )}
+            {onOpenProfile && (
+              <Button 
+                variant="outline" 
+                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40 hover:bg-primary/5" 
+                onClick={onOpenProfile}
+              >
+                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-sm font-semibold">الملف الشخصي</span>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       
