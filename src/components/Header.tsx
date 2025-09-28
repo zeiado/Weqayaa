@@ -76,7 +76,15 @@ export const Header = ({
               <>
                 {/* Mobile: Show only essential buttons */}
                 <div className="hidden sm:flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="relative">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="relative"
+                    onClick={() => {
+                      // TODO: Implement notification functionality
+                      console.log('Notifications clicked');
+                    }}
+                  >
                     <Bell className="w-5 h-5" />
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full"></div>
                   </Button>

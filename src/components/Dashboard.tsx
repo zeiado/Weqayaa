@@ -334,7 +334,15 @@ export const Dashboard = ({
                   <Badge className="bg-white/20 text-white text-xs">تحليلات متقدمة</Badge>
                 </div>
               </div>
-              <Button variant="secondary" className="bg-white text-secondary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+              <Button 
+                variant="secondary" 
+                className="bg-white text-secondary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => {
+                  // TODO: Implement premium upgrade functionality
+                  console.log('Premium upgrade clicked');
+                  alert('ميزة الترقية قيد التطوير - سيتم إطلاقها قريباً!');
+                }}
+              >
                 <Crown className="w-5 h-5 ml-2" />
                 ترقية الآن
                 <ArrowRight className="w-4 h-4 mr-2" />

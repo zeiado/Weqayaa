@@ -135,7 +135,7 @@ export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafe
                 <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                   <Target className="w-5 h-5 mx-auto mb-2 text-green-600 dark:text-green-400" />
                   <div className="text-lg font-bold text-green-600 dark:text-green-400">{mealPlan.totalCarbohydrates.toFixed(1)}g</div>
-                  <div className="text-xs text-foreground/70">كربوهيدرات</div>
+                  <div className="text-xs text-green-700 dark:text-green-300 font-medium">كربوهيدرات</div>
                 </div>
                 <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
                   <Droplets className="w-5 h-5 mx-auto mb-2 text-red-600 dark:text-red-400" />
@@ -350,20 +350,36 @@ export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafe
                     ))}
                   </select>
                 </div>
-                <Button onClick={generateMealPlan} disabled={isGenerating} className="bg-gradient-primary hover:shadow-lg transition-all duration-300 w-full">
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 ml-2 animate-spin" />
-                      جاري التوليد...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 ml-2" />
-                      بدء التوليد
-                      <ArrowRight className="w-4 h-4 mr-2" />
-                    </>
-                  )}
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    onClick={generateMealPlan} 
+                    disabled={isGenerating} 
+                    className="bg-gradient-primary hover:shadow-lg transition-all duration-300 flex-1"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                        جاري التوليد...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 ml-2" />
+                        بدء التوليد
+                        <ArrowRight className="w-4 h-4 mr-2" />
+                      </>
+                    )}
+                  </Button>
+                  
+                  <Button 
+                    onClick={onOpenCafeteria}
+                    variant="outline"
+                    className="border-secondary/30 text-secondary hover:bg-secondary/10 flex-1"
+                  >
+                    <Utensils className="w-4 h-4 ml-2" />
+                    فتح قائمة الكافتيريا
+                    <ArrowRight className="w-4 h-4 mr-2" />
+                  </Button>
+                </div>
               </div>
 
               {/* Build manually via cafeteria */}
