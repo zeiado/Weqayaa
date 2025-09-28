@@ -44,8 +44,8 @@ export const FoodItemsTable: React.FC<FoodItemsTableProps> = ({ foodItems, title
               </TableRow>
             </TableHeader>
             <TableBody>
-              {foodItems.map((item) => (
-                <TableRow key={item.id}>
+              {foodItems.map((item, index) => (
+                <TableRow key={item.mealPlanFoodItemId || `${item.id}-${index}`}>
                   <TableCell className="font-medium">
                     <div>
                       <div className="font-semibold">{item.name}</div>
