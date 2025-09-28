@@ -274,7 +274,7 @@ export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafe
                   <div className="text-2xl font-bold">{totalNutrition.protein.toFixed(1)}g</div>
                   <div className="text-sm opacity-90">بروتين</div>
                 </div>
-                <div className="text-center p-4 bg-gradient-accent text-white rounded-lg group hover:scale-105 transition-all duration-300">
+                <div className="text-center p-4 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-lg group hover:scale-105 transition-all duration-300">
                   <Target className="w-6 h-6 mx-auto mb-2" />
                   <div className="text-2xl font-bold">{totalNutrition.carbohydrates.toFixed(1)}g</div>
                   <div className="text-sm opacity-90">كربوهيدرات</div>
@@ -350,36 +350,45 @@ export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafe
                     ))}
                   </select>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button 
-                    onClick={generateMealPlan} 
-                    disabled={isGenerating} 
-                    className="bg-gradient-primary hover:shadow-lg transition-all duration-300 flex-1"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="w-4 h-4 ml-2 animate-spin" />
-                        جاري التوليد...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4 ml-2" />
-                        بدء التوليد
-                        <ArrowRight className="w-4 h-4 mr-2" />
-                      </>
-                    )}
-                  </Button>
-                  
-                  <Button 
-                    onClick={onOpenCafeteria}
-                    variant="outline"
-                    className="border-secondary/30 text-secondary hover:bg-secondary/10 flex-1"
-                  >
-                    <Utensils className="w-4 h-4 ml-2" />
-                    فتح قائمة الكافتيريا
-                    <ArrowRight className="w-4 h-4 mr-2" />
-                  </Button>
+                <Button onClick={generateMealPlan} disabled={isGenerating} className="bg-gradient-primary hover:shadow-lg transition-all duration-300 w-full">
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                      جاري التوليد...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 ml-2" />
+                      بدء التوليد
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Build manually via cafeteria */}
+              <div className="p-6 rounded-lg border border-secondary/20 bg-secondary/5 dark:bg-secondary/10">
+                <h3 className="font-bold mb-4 flex items-center gap-3 text-lg text-foreground">
+                  <div className="w-8 h-8 bg-gradient-secondary rounded-full flex items-center justify-center">
+                    <Utensils className="w-4 h-4 text-white" />
+                  </div>
+                  إنشاء خطة الوجبات يدوياً
+                </h3>
+                <p className="text-sm text-foreground/80 mb-4">اختر من قائمة الكافتيريا وأضف الأطعمة المفضلة</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Badge className="bg-secondary/20 text-secondary text-xs">اختيار شخصي</Badge>
+                  <Badge className="bg-secondary/20 text-secondary text-xs">تحكم كامل</Badge>
+                  <Badge className="bg-secondary/20 text-secondary text-xs">أطعمة مفضلة</Badge>
                 </div>
+                <Button 
+                  onClick={onOpenCafeteria}
+                  variant="outline"
+                  className="border-secondary/30 text-secondary hover:bg-secondary/10 w-full"
+                >
+                  <Utensils className="w-4 h-4 ml-2" />
+                  فتح قائمة الكافتيريا
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                </Button>
               </div>
 
             </div>
