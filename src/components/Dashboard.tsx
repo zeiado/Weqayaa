@@ -352,47 +352,47 @@ export const Dashboard = ({
             {onOpenProgressReport && (
               <Button 
                 variant="outline" 
-                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40 hover:bg-primary/5" 
+                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-2 border-primary/30 hover:border-primary/60 hover:bg-gradient-to-br hover:from-primary/10 hover:to-primary/5 dark:border-primary/40 dark:hover:border-primary/70 dark:hover:from-primary/15 dark:hover:to-primary/10 shadow-lg hover:shadow-xl hover:shadow-primary/20" 
                 onClick={onOpenProgressReport}
               >
-                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-                  <TrendingUp className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center group-hover:rotate-12 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-primary/30">
+                  <TrendingUp className="w-6 h-6 text-white drop-shadow-sm" />
                 </div>
-                <span className="text-sm font-semibold">تقرير التقدم</span>
+                <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-300">تقرير التقدم</span>
               </Button>
             )}
             <Button 
               variant="outline" 
-              className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-secondary/20 hover:border-secondary/40 hover:bg-secondary/5" 
+              className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-2 border-secondary/30 hover:border-secondary/60 hover:bg-gradient-to-br hover:from-secondary/10 hover:to-secondary/5 dark:border-secondary/40 dark:hover:border-secondary/70 dark:hover:from-secondary/15 dark:hover:to-secondary/10 shadow-lg hover:shadow-xl hover:shadow-secondary/20" 
               onClick={onOpenCafeteria}
             >
-              <div className="w-12 h-12 bg-gradient-secondary rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-                <Utensils className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 rounded-full flex items-center justify-center group-hover:rotate-12 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-secondary/30">
+                <Utensils className="w-6 h-6 text-white drop-shadow-sm" />
               </div>
-              <span className="text-sm font-semibold">قائمة الكافتيريا</span>
+              <span className="text-sm font-semibold text-foreground group-hover:text-secondary transition-colors duration-300">قائمة الكافتيريا</span>
             </Button>
             {onOpenMealPlan && (
               <Button 
                 variant="outline" 
-                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-accent/20 hover:border-accent/40 hover:bg-accent/5" 
+                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-2 border-accent/30 hover:border-accent/60 hover:bg-gradient-to-br hover:from-accent/10 hover:to-accent/5 dark:border-accent/40 dark:hover:border-accent/70 dark:hover:from-accent/15 dark:hover:to-accent/10 shadow-lg hover:shadow-xl hover:shadow-accent/20" 
                 onClick={onOpenMealPlan}
               >
-                <div className="w-12 h-12 bg-gradient-accent rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-                  <Calendar className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-accent to-accent/80 rounded-full flex items-center justify-center group-hover:rotate-12 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-accent/30">
+                  <Calendar className="w-6 h-6 text-white drop-shadow-sm" />
                 </div>
-                <span className="text-sm font-semibold">خطة الوجبات</span>
+                <span className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors duration-300">خطة الوجبات</span>
               </Button>
             )}
             {onOpenProfile && (
               <Button 
                 variant="outline" 
-                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40 hover:bg-primary/5" 
+                className="p-6 sm:p-8 h-auto flex-col gap-4 group hover:scale-105 transition-all duration-300 border-2 border-primary/30 hover:border-primary/60 hover:bg-gradient-to-br hover:from-primary/10 hover:to-primary/5 dark:border-primary/40 dark:hover:border-primary/70 dark:hover:from-primary/15 dark:hover:to-primary/10 shadow-lg hover:shadow-xl hover:shadow-primary/20" 
                 onClick={onOpenProfile}
               >
-                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-                  <User className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center group-hover:rotate-12 transition-all duration-300 shadow-md group-hover:shadow-lg group-hover:shadow-primary/30">
+                  <User className="w-6 h-6 text-white drop-shadow-sm" />
                 </div>
-                <span className="text-sm font-semibold">الملف الشخصي</span>
+                <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-300">الملف الشخصي</span>
               </Button>
             )}
           </div>
