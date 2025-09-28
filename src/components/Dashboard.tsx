@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { AIChat } from "./AIChat";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { PremiumUpgradeModal } from "./PremiumUpgradeModal";
 import { 
   Bell, 
   MessageCircle, 
@@ -56,6 +57,7 @@ export const Dashboard = ({
     lastName: string;
     email: string;
   } | null>(null);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   useEffect(() => {
     // Get user data from localStorage
@@ -337,11 +339,7 @@ export const Dashboard = ({
               <Button 
                 variant="secondary" 
                 className="bg-white text-secondary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={() => {
-                  // TODO: Implement premium upgrade functionality
-                  console.log('Premium upgrade clicked');
-                  alert('ميزة الترقية قيد التطوير - سيتم إطلاقها قريباً!');
-                }}
+                onClick={() => setShowPremiumModal(true)}
               >
                 <Crown className="w-5 h-5 ml-2" />
                 ترقية الآن
@@ -408,6 +406,12 @@ export const Dashboard = ({
       </div>
       
       <Footer />
+      
+      {/* Premium Upgrade Modal */}
+      <PremiumUpgradeModal 
+        isOpen={showPremiumModal} 
+        onClose={() => setShowPremiumModal(false)} 
+      />
     </div>
   );
 };

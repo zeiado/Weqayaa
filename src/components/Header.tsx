@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { WeqayaLogo } from "./WeqayaLogo";
 import { ThemeToggle } from "./ThemeToggle";
+import { NotificationsDropdown } from "./NotificationsDropdown";
 import { Bell, MessageCircle, User, Settings, LogOut } from "lucide-react";
 import { authApi } from "@/services/authApi";
 
@@ -24,6 +25,8 @@ export const Header = ({
   onLogout,
   onLogin
 }: HeaderProps) => {
+  const [showNotifications, setShowNotifications] = useState(false);
+
   const handleLogout = () => {
     authApi.removeToken();
     localStorage.removeItem('userData');
@@ -80,10 +83,7 @@ export const Header = ({
                     variant="ghost" 
                     size="icon" 
                     className="relative"
-                    onClick={() => {
-                      // TODO: Implement notification functionality
-                      console.log('Notifications clicked');
-                    }}
+                    onClick={() => setShowNotifications(!showNotifications)}
                   >
                     <Bell className="w-5 h-5" />
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full"></div>
@@ -164,6 +164,12 @@ export const Header = ({
           </div>
         )}
       </div>
+      
+      {/* Notifications Dropdown */}
+      <NotificationsDropdown 
+        isOpen={showNotifications} 
+        onClose={() => setShowNotifications(false)} 
+      />
     </header>
   );
 };
