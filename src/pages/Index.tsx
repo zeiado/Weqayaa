@@ -1,14 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { HeroSection } from "@/components/HeroSection";
 import { OnboardingFlow } from "@/components/OnboardingFlow";
-import { Dashboard } from "@/components/Dashboard";
 import { Auth } from "@/components/Auth";
-import { AIChat } from "@/components/AIChat";
-import { UserProfile } from "@/components/UserProfile";
-import CafeteriaMenu from "@/components/CafeteriaMenu";
-import { DailyMealPlan } from "@/components/DailyMealPlan";
-import { ProgressReport } from "@/components/ProgressReport";
 import { authApi } from "@/services/authApi";
+
+// Lazy load heavy components
+const Dashboard = lazy(() => import("@/components/Dashboard").then(module => ({ default: module.Dashboard })));
+const AIChat = lazy(() => import("@/components/AIChat").then(module => ({ default: module.AIChat })));
+const UserProfile = lazy(() => import("@/components/UserProfile").then(module => ({ default: module.UserProfile })));
+const CafeteriaMenu = lazy(() => import("@/components/CafeteriaMenu"));
+const DailyMealPlan = lazy(() => import("@/components/DailyMealPlan").then(module => ({ default: module.DailyMealPlan })));
+const ProgressReport = lazy(() => import("@/components/ProgressReport").then(module => ({ default: module.ProgressReport })));
+
+// Loading component
+const LoadingSpinner = () => (
+  <div className="min-h-screen bg-gradient-wellness flex items-center justify-center">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-muted-foreground">جاري التحميل...</p>
+    </div>
+  </div>
+);
 
 type AppState = "landing" | "auth" | "onboarding" | "dashboard" | "chat" | "cafeteria" | "profile" | "mealplan" | "progress";
 type AuthMode = "login" | "register";
@@ -98,39 +110,47 @@ const Index = () => {
     setCurrentState("landing");
   };
 
-  switch (currentState) {
-    case "auth":
-      return <Auth 
-        onBack={backToLanding} 
-        onLogin={handleLogin} 
-        onRegister={handleRegister}
-        initialMode={authMode}
-      />;
-    case "onboarding":
-      return <OnboardingFlow onComplete={handleOnboardingComplete} onBack={backToLanding} />;
-    case "dashboard":
-      return <Dashboard 
-        userName={userData?.name} 
-        onBack={backToLanding} 
-        onOpenChat={showChat}
-        onOpenCafeteria={showCafeteria}
-        onOpenProfile={showProfile}
-        onOpenMealPlan={showMealPlan}
-        onOpenProgressReport={showProgressReport}
-      />;
-    case "chat":
-      return <AIChat onBack={backToDashboard} />;
-    case "cafeteria":
-      return <CafeteriaMenu onBack={backToDashboard} isMealPlanMode={isMealPlanMode} selectedDate={selectedDate} />;
-    case "profile":
-      return <UserProfile onBack={backToDashboard} onOpenChat={showChat} />;
-    case "mealplan":
-      return <DailyMealPlan onBack={backToDashboard} onOpenCafeteria={showCafeteriaForMealPlan} onDateChange={setSelectedDate} />;
-    case "progress":
-      return <ProgressReport onBack={backToDashboard} />;
-    default:
-      return <HeroSection onStartRegistration={startRegistration} onLogin={showAuth} />;
-  }
+  const renderCurrentState = () => {
+    switch (currentState) {
+      case "auth":
+        return <Auth 
+          onBack={backToLanding} 
+          onLogin={handleLogin} 
+          onRegister={handleRegister}
+          initialMode={authMode}
+        />;
+      case "onboarding":
+        return <OnboardingFlow onComplete={handleOnboardingComplete} onBack={backToLanding} />;
+      case "dashboard":
+        return <Dashboard 
+          userName={userData?.name} 
+          onBack={backToLanding} 
+          onOpenChat={showChat}
+          onOpenCafeteria={showCafeteria}
+          onOpenProfile={showProfile}
+          onOpenMealPlan={showMealPlan}
+          onOpenProgressReport={showProgressReport}
+        />;
+      case "chat":
+        return <AIChat onBack={backToDashboard} />;
+      case "cafeteria":
+        return <CafeteriaMenu onBack={backToDashboard} isMealPlanMode={isMealPlanMode} selectedDate={selectedDate} />;
+      case "profile":
+        return <UserProfile onBack={backToDashboard} onOpenChat={showChat} />;
+      case "mealplan":
+        return <DailyMealPlan onBack={backToDashboard} onOpenCafeteria={showCafeteriaForMealPlan} onDateChange={setSelectedDate} />;
+      case "progress":
+        return <ProgressReport onBack={backToDashboard} />;
+      default:
+        return <HeroSection onStartRegistration={startRegistration} onLogin={showAuth} />;
+    }
+  };
+
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      {renderCurrentState()}
+    </Suspense>
+  );
 };
 
 export default Index;

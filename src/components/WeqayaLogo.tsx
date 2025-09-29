@@ -1,5 +1,5 @@
 import React from "react";
-import logoImage from '../assets/weqaya-logo.png'; // uncomment this line
+import logoImage from '../assets/weqaya-logo.webp';
 
 export const WeqayaLogo = ({
   size = "xl",

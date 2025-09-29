@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { WeqayaLogo } from "./WeqayaLogo";
@@ -9,7 +9,6 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PremiumUpgradeModal } from "./PremiumUpgradeModal";
 import { AIAssistancePopup } from "./AIAssistancePopup";
-import { OptimizedImage } from "./OptimizedImage";
 import { 
   Bell, 
   MessageCircle, 
@@ -37,95 +36,7 @@ import {
   Sun
 } from "lucide-react";
 
-// Memoized components for better performance
-const StatsCard = React.memo(({ 
-  icon: Icon, 
-  value, 
-  label, 
-  progress, 
-  remaining, 
-  gradientClass, 
-  iconColor 
-}: {
-  icon: any;
-  value: string | number;
-  label: string;
-  progress: number;
-  remaining: string;
-  gradientClass: string;
-  iconColor: string;
-}) => (
-  <Card className="glass-card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40 bg-background/80 backdrop-blur-sm">
-    <div className="relative">
-      <div className={`w-12 h-12 ${gradientClass} rounded-full flex items-center justify-center mx-auto mb-3 group-hover:rotate-12 transition-transform duration-300`}>
-        <Icon className={`w-6 h-6 ${iconColor}`} />
-      </div>
-      <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">{value}</div>
-      <div className="text-sm text-foreground/80 mb-3">{label}</div>
-      <Progress 
-        value={progress} 
-        className="h-2 bg-primary/20" 
-      />
-      <div className="text-xs text-foreground/70 mt-2">
-        {remaining}
-      </div>
-    </div>
-  </Card>
-));
-
-const MealCard = React.memo(({ meal, index }: { meal: any; index: number }) => (
-  <Card className={`glass-card p-4 sm:p-6 group hover:scale-[1.02] transition-all duration-300 bg-background/80 ${!meal.available ? 'opacity-60' : 'hover:shadow-lg'}`}>
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div className="flex-1 min-w-0">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
-              {meal.name.includes('فول') ? <Apple className="w-5 h-5 text-white" /> : 
-               meal.name.includes('سلطة') ? <Heart className="w-5 h-5 text-white" /> :
-               <Coffee className="w-5 h-5 text-white" />}
-            </div>
-            <h3 className="font-bold text-foreground text-base sm:text-lg">{meal.name}</h3>
-          </div>
-          {!meal.available && (
-            <Badge variant="secondary" className="text-xs shrink-0 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-              <Clock className="w-3 h-3 ml-1" />
-              غير متاح
-            </Badge>
-          )}
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-          <div className="flex items-center gap-2 text-foreground/80">
-            <Zap className="w-4 h-4 text-primary" />
-            <span>{meal.calories} سعرة</span>
-          </div>
-          <div className="flex items-center gap-2 text-foreground/80">
-            <Activity className="w-4 h-4 text-secondary" />
-            <span>{meal.protein}g بروتين</span>
-          </div>
-          <div className="flex items-center gap-2 text-foreground/80 col-span-2 sm:col-span-1">
-            <span className="font-semibold text-foreground">{meal.price} جنيه</span>
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-        <div className="flex items-center gap-1">
-          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-          <span className="text-sm font-semibold text-foreground">{meal.rating}</span>
-        </div>
-        <Button 
-          size="sm" 
-          disabled={!meal.available}
-          className="bg-gradient-primary hover:shadow-lg transition-all duration-300 px-6"
-        >
-          <Plus className="w-4 h-4 ml-2" />
-          إضافة
-        </Button>
-      </div>
-    </div>
-  </Card>
-));
-
-export const DashboardOptimized = ({ 
+export const Dashboard = ({ 
   userName, 
   onBack,
   onOpenChat,
@@ -150,8 +61,8 @@ export const DashboardOptimized = ({
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showAIPopup, setShowAIPopup] = useState(false);
 
-  // Memoized user data fetching
   useEffect(() => {
+    // Get user data from localStorage
     const storedUserData = localStorage.getItem('userData');
     if (storedUserData) {
       try {
@@ -162,22 +73,18 @@ export const DashboardOptimized = ({
       }
     }
 
+    // Show AI assistance popup after a delay (only if not shown before)
     const hasSeenAIPopup = localStorage.getItem('hasSeenAIPopup');
     if (!hasSeenAIPopup) {
       const timer = setTimeout(() => {
         setShowAIPopup(true);
-      }, 2000);
+      }, 2000); // Show after 2 seconds
       return () => clearTimeout(timer);
     }
   }, []);
 
-  // Memoized computed values
-  const displayName = useMemo(() => 
-    userData ? `${userData.firstName} ${userData.lastName}` : userName || "أحمد",
-    [userData, userName]
-  );
-
-  const todaysMeals = useMemo(() => [
+  const displayName = userData ? `${userData.firstName} ${userData.lastName}` : userName || "أحمد";
+  const todaysMeals = [
     {
       name: "فول مدمس بالطحينة",
       calories: 320,
@@ -202,54 +109,13 @@ export const DashboardOptimized = ({
       rating: 4.3,
       available: false
     }
-  ], []);
+  ];
 
-  const nutritionGoals = useMemo(() => ({
+  const nutritionGoals = {
     calories: { current: 1200, target: 2000 },
     protein: { current: 45, target: 80 },
     water: { current: 6, target: 8 }
-  }), []);
-
-  // Memoized stats data
-  const statsData = useMemo(() => [
-    {
-      icon: Flame,
-      value: nutritionGoals.calories.current,
-      label: "سعرات اليوم",
-      progress: (nutritionGoals.calories.current / nutritionGoals.calories.target) * 100,
-      remaining: `${nutritionGoals.calories.target - nutritionGoals.calories.current} سعرة متبقية`,
-      gradientClass: "bg-gradient-primary",
-      iconColor: "text-white"
-    },
-    {
-      icon: Activity,
-      value: `${nutritionGoals.protein.current}g`,
-      label: "بروتين",
-      progress: (nutritionGoals.protein.current / nutritionGoals.protein.target) * 100,
-      remaining: `${nutritionGoals.protein.target - nutritionGoals.protein.current}g متبقي`,
-      gradientClass: "bg-gradient-secondary",
-      iconColor: "text-white"
-    },
-    {
-      icon: Droplets,
-      value: nutritionGoals.water.current,
-      label: "أكواب مياه",
-      progress: (nutritionGoals.water.current / nutritionGoals.water.target) * 100,
-      remaining: `${nutritionGoals.water.target - nutritionGoals.water.current} كوب متبقي`,
-      gradientClass: "bg-gradient-accent",
-      iconColor: "text-white"
-    }
-  ], [nutritionGoals]);
-
-  // Memoized callbacks
-  const handleCloseAIPopup = useCallback(() => {
-    setShowAIPopup(false);
-    localStorage.setItem('hasSeenAIPopup', 'true');
-  }, []);
-
-  const handleShowAIPopup = useCallback(() => {
-    setShowAIPopup(true);
-  }, []);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-wellness relative overflow-hidden">
@@ -291,9 +157,56 @@ export const DashboardOptimized = ({
 
         {/* Enhanced Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-          {statsData.map((stat, index) => (
-            <StatsCard key={index} {...stat} />
-          ))}
+          <Card className="glass-card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300 border-primary/20 hover:border-primary/40 bg-background/80 backdrop-blur-sm">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-3 group-hover:rotate-12 transition-transform duration-300">
+                <Flame className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary mb-1">{nutritionGoals.calories.current}</div>
+              <div className="text-sm text-foreground/80 mb-3">سعرات اليوم</div>
+              <Progress 
+                value={(nutritionGoals.calories.current / nutritionGoals.calories.target) * 100} 
+                className="h-2 bg-primary/20" 
+              />
+              <div className="text-xs text-foreground/70 mt-2">
+                {nutritionGoals.calories.target - nutritionGoals.calories.current} سعرة متبقية
+              </div>
+            </div>
+          </Card>
+
+          <Card className="glass-card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300 border-secondary/20 hover:border-secondary/40 bg-background/80 backdrop-blur-sm">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-secondary rounded-full flex items-center justify-center mx-auto mb-3 group-hover:rotate-12 transition-transform duration-300">
+                <Activity className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-secondary mb-1">{nutritionGoals.protein.current}g</div>
+              <div className="text-sm text-foreground/80 mb-3">بروتين</div>
+              <Progress 
+                value={(nutritionGoals.protein.current / nutritionGoals.protein.target) * 100} 
+                className="h-2 bg-secondary/20" 
+              />
+              <div className="text-xs text-foreground/70 mt-2">
+                {nutritionGoals.protein.target - nutritionGoals.protein.current}g متبقي
+              </div>
+            </div>
+          </Card>
+
+          <Card className="glass-card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300 border-accent/20 hover:border-accent/40 bg-background/80 backdrop-blur-sm">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-accent rounded-full flex items-center justify-center mx-auto mb-3 group-hover:rotate-12 transition-transform duration-300">
+                <Droplets className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-accent mb-1">{nutritionGoals.water.current}</div>
+              <div className="text-sm text-foreground/80 mb-3">أكواب مياه</div>
+              <Progress 
+                value={(nutritionGoals.water.current / nutritionGoals.water.target) * 100} 
+                className="h-2 bg-accent/20" 
+              />
+              <div className="text-xs text-foreground/70 mt-2">
+                {nutritionGoals.water.target - nutritionGoals.water.current} كوب متبقي
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Enhanced AI Chat Section */}
@@ -333,7 +246,7 @@ export const DashboardOptimized = ({
                 <Button 
                   variant="outline" 
                   className="bg-white/20 text-white border-white/30 hover:bg-white/30 w-full sm:w-auto px-6 py-3 text-sm font-medium transition-all duration-300"
-                  onClick={handleShowAIPopup}
+                  onClick={() => setShowAIPopup(true)}
                 >
                   <Sparkles className="w-4 h-4 ml-2" />
                   تعرف على المزيد
@@ -360,7 +273,55 @@ export const DashboardOptimized = ({
           
           <div className="grid gap-4 sm:gap-6">
             {todaysMeals.map((meal, index) => (
-              <MealCard key={index} meal={meal} index={index} />
+              <Card key={index} className={`glass-card p-4 sm:p-6 group hover:scale-[1.02] transition-all duration-300 bg-background/80 ${!meal.available ? 'opacity-60' : 'hover:shadow-lg'}`}>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
+                          {meal.name.includes('فول') ? <Apple className="w-5 h-5 text-white" /> : 
+                           meal.name.includes('سلطة') ? <Heart className="w-5 h-5 text-white" /> :
+                           <Coffee className="w-5 h-5 text-white" />}
+                        </div>
+                        <h3 className="font-bold text-foreground text-base sm:text-lg">{meal.name}</h3>
+                      </div>
+                      {!meal.available && (
+                        <Badge variant="secondary" className="text-xs shrink-0 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                          <Clock className="w-3 h-3 ml-1" />
+                          غير متاح
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+                      <div className="flex items-center gap-2 text-foreground/80">
+                        <Zap className="w-4 h-4 text-primary" />
+                        <span>{meal.calories} سعرة</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-foreground/80">
+                        <Activity className="w-4 h-4 text-secondary" />
+                        <span>{meal.protein}g بروتين</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-foreground/80 col-span-2 sm:col-span-1">
+                        <span className="font-semibold text-foreground">{meal.price} جنيه</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      <span className="text-sm font-semibold text-foreground">{meal.rating}</span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      disabled={!meal.available}
+                      className="bg-gradient-primary hover:shadow-lg transition-all duration-300 px-6"
+                    >
+                      <Plus className="w-4 h-4 ml-2" />
+                      إضافة
+                    </Button>
+                  </div>
+                </div>
+              </Card>
             ))}
           </div>
         </div>
@@ -476,7 +437,10 @@ export const DashboardOptimized = ({
       {/* AI Assistance Popup */}
       <AIAssistancePopup 
         isOpen={showAIPopup} 
-        onClose={handleCloseAIPopup}
+        onClose={() => {
+          setShowAIPopup(false);
+          localStorage.setItem('hasSeenAIPopup', 'true');
+        }}
         onOpenChat={onOpenChat}
       />
     </div>
