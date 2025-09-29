@@ -9,7 +9,6 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PremiumUpgradeModal } from "./PremiumUpgradeModal";
 import { AIAssistancePopup } from "./AIAssistancePopup";
-import { OptimizedImage } from "./OptimizedImage";
 import { 
   Bell, 
   MessageCircle, 
@@ -125,7 +124,7 @@ const MealCard = React.memo(({ meal, index }: { meal: any; index: number }) => (
   </Card>
 ));
 
-export const DashboardOptimized = ({ 
+export const Dashboard = ({ 
   userName, 
   onBack,
   onOpenChat,
