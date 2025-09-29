@@ -8,6 +8,7 @@ import { AIChat } from "./AIChat";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { PremiumUpgradeModal } from "./PremiumUpgradeModal";
+import { AIAssistancePopup } from "./AIAssistancePopup";
 import { 
   Bell, 
   MessageCircle, 
@@ -58,6 +59,7 @@ export const Dashboard = ({
     email: string;
   } | null>(null);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showAIPopup, setShowAIPopup] = useState(false);
 
   useEffect(() => {
     // Get user data from localStorage
@@ -69,6 +71,15 @@ export const Dashboard = ({
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
+    }
+
+    // Show AI assistance popup after a delay (only if not shown before)
+    const hasSeenAIPopup = localStorage.getItem('hasSeenAIPopup');
+    if (!hasSeenAIPopup) {
+      const timer = setTimeout(() => {
+        setShowAIPopup(true);
+      }, 2000); // Show after 2 seconds
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -222,15 +233,25 @@ export const Dashboard = ({
                   <Badge className="bg-white/20 text-white text-xs">مخصص لك</Badge>
                 </div>
               </div>
-              <Button 
-                variant="secondary" 
-                className="bg-white text-primary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={onOpenChat}
-              >
-                <MessageCircle className="w-5 h-5 ml-2" />
-                ابدأ المحادثة
-                <ArrowRight className="w-4 h-4 mr-2" />
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button 
+                  variant="secondary" 
+                  className="bg-white text-primary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={onOpenChat}
+                >
+                  <MessageCircle className="w-5 h-5 ml-2" />
+                  ابدأ المحادثة
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="bg-white/20 text-white border-white/30 hover:bg-white/30 w-full sm:w-auto px-6 py-3 text-sm font-medium transition-all duration-300"
+                  onClick={() => setShowAIPopup(true)}
+                >
+                  <Sparkles className="w-4 h-4 ml-2" />
+                  تعرف على المزيد
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
@@ -411,6 +432,16 @@ export const Dashboard = ({
       <PremiumUpgradeModal 
         isOpen={showPremiumModal} 
         onClose={() => setShowPremiumModal(false)} 
+      />
+
+      {/* AI Assistance Popup */}
+      <AIAssistancePopup 
+        isOpen={showAIPopup} 
+        onClose={() => {
+          setShowAIPopup(false);
+          localStorage.setItem('hasSeenAIPopup', 'true');
+        }}
+        onOpenChat={onOpenChat}
       />
     </div>
   );

@@ -33,13 +33,13 @@ export interface DailyNeeds {
   };
   steps: {
     target: number;
-    achieved: number;
+    consumed: number; // Changed from 'achieved' to 'consumed' to match API spec
     remaining: number;
     percentage: number;
   };
   sleep: {
     target: number; // in hours
-    achieved: number;
+    consumed: number; // Changed from 'achieved' to 'consumed' to match API spec
     remaining: number;
     percentage: number;
   };
@@ -94,6 +94,17 @@ export interface ProgressReport {
     sleep: ProgressChartData;
   };
   lastUpdated: string;
+}
+
+export interface MealPlanItemUpdateResponse {
+  success: boolean;
+  message: string;
+  updatedItem?: {
+    id: number;
+    name: string;
+    quantity: number;
+    calories: number;
+  };
 }
 
 // Helper functions for progress calculations

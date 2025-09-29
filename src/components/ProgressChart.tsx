@@ -16,6 +16,25 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
   unit = '', 
   color = '#3b82f6' 
 }) => {
+  // Add null checks and error handling
+  if (!data || !data.labels || !data.datasets || !data.datasets[0] || !data.datasets[0].data) {
+    return (
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-center">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 w-full flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <div className="text-4xl mb-2">📊</div>
+              <p className="text-sm">لا توجد بيانات متاحة للرسم البياني</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -30,18 +49,21 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
     return null;
   };
 
-  return (
-    <Card className="glass-card">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-center">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data.labels.map((label, index) => ({
-              name: label,
-              value: data.datasets[0].data[index]
-            }))}>
+  try {
+    const chartData = data.labels.map((label, index) => ({
+      name: label,
+      value: data.datasets[0].data[index] || 0
+    }));
+
+    return (
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-center">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="name" 
@@ -68,7 +90,26 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
         </div>
       </CardContent>
     </Card>
-  );
+    );
+  } catch (error) {
+    console.error('Error rendering ProgressChart:', error);
+    return (
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-center">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 w-full flex items-center justify-center">
+            <div className="text-center text-red-500">
+              <div className="text-4xl mb-2">⚠️</div>
+              <p className="text-sm">خطأ في عرض الرسم البياني</p>
+              <p className="text-xs mt-1">تحقق من وحدة التحكم للتفاصيل</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 };
 
 // Progress Summary Chart Component
@@ -82,14 +123,34 @@ interface ProgressSummaryChartProps {
 }
 
 export const ProgressSummaryChart: React.FC<ProgressSummaryChartProps> = ({ data }) => {
-  return (
-    <Card className="glass-card">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-center">ملخص التقدم اليومي</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {data.map((item, index) => (
+  // Add null checks
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-center">ملخص التقدم اليومي</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-32 w-full flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <div className="text-4xl mb-2">📊</div>
+              <p className="text-sm">لا توجد بيانات متاحة</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  try {
+    return (
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-center">ملخص التقدم اليومي</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {data.map((item, index) => (
             <div key={index} className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700">{item.name}</span>
@@ -119,5 +180,24 @@ export const ProgressSummaryChart: React.FC<ProgressSummaryChartProps> = ({ data
         </div>
       </CardContent>
     </Card>
-  );
+    );
+  } catch (error) {
+    console.error('Error rendering ProgressSummaryChart:', error);
+    return (
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-center">ملخص التقدم اليومي</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-32 w-full flex items-center justify-center">
+            <div className="text-center text-red-500">
+              <div className="text-4xl mb-2">⚠️</div>
+              <p className="text-sm">خطأ في عرض ملخص التقدم</p>
+              <p className="text-xs mt-1">تحقق من وحدة التحكم للتفاصيل</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 };
