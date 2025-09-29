@@ -1,4 +1,4 @@
-# 🍽️ Weqaya - A healthy Meal Is A Good Deal
+# 🍽️ Weqaya - A Healthy Meal Is A Good Deal
 
 <div align="center">
   <img src="src/assets/weqaya-logo.webp" alt="Weqaya Logo" width="120" height="120">
