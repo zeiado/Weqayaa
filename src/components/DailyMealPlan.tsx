@@ -19,13 +19,22 @@ import {
 } from '@/types/mealPlan';
 import { useToast } from '@/hooks/use-toast';
 
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  location: string;
+}
+
 interface DailyMealPlanProps {
   onBack: () => void;
   onOpenCafeteria?: () => void;
   onDateChange?: (date: string) => void;
+  onOpenCheckout?: (cartItems: CartItem[]) => void;
 }
 
-export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafeteria, onDateChange }) => {
+export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafeteria, onDateChange, onOpenCheckout }) => {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,6 +86,45 @@ export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafe
   };
 
   const totalNutrition = getTotalNutrition();
+
+  // Convert meal plan items to cart items for payment
+  const convertMealPlanToCart = (): CartItem[] => {
+    const cartItems: CartItem[] = [];
+    
+    mealPlans.forEach(mealPlan => {
+      mealPlan.foodItems.forEach(foodItem => {
+        // Use a default price since MealPlanFoodItem doesn't have price
+        // In a real app, you'd fetch this from the menu API
+        const defaultPrice = 25; // Default price in Egyptian Pounds
+        
+        cartItems.push({
+          id: foodItem.id,
+          name: foodItem.name,
+          price: defaultPrice,
+          quantity: foodItem.quantity,
+          location: 'الكافتيريا الرئيسية' // Default location
+        });
+      });
+    });
+    
+    return cartItems;
+  };
+
+  const handlePayForMealPlan = () => {
+    const cartItems = convertMealPlanToCart();
+    if (cartItems.length === 0) {
+      toast({
+        title: "لا توجد وجبات للدفع",
+        description: "يرجى إضافة وجبات لخطة الوجبات أولاً",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (onOpenCheckout) {
+      onOpenCheckout(cartItems);
+    }
+  };
 
   const MealCard: React.FC<{ mealType: MealType }> = ({ mealType }) => {
     const mealPlan = getMealPlanForType(mealType);
@@ -394,6 +442,46 @@ export const DailyMealPlan: React.FC<DailyMealPlanProps> = ({ onBack, onOpenCafe
             </div>
           </CardContent>
         </Card>
+
+        {/* Pay for Meal Plan Button */}
+        {mealPlans.length > 0 && (
+          <Card className="glass-card mb-8 bg-background/80">
+            <CardHeader className="pb-6">
+              <CardTitle className="flex items-center gap-3 text-xl text-foreground">
+                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-white" />
+                </div>
+                دفع خطة الوجبات
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="p-6 rounded-lg border border-green-200 bg-green-50 dark:bg-green-900/20">
+                <h3 className="font-bold mb-4 flex items-center gap-3 text-lg text-foreground">
+                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                    <Heart className="w-4 h-4 text-white" />
+                  </div>
+                  دفع خطة الوجبات المكتملة
+                </h3>
+                <p className="text-sm text-foreground/80 mb-4">
+                  لديك {mealPlans.length} وجبة في خطة الوجبات. يمكنك الآن دفع ثمن جميع الوجبات والاستمتاع بوجباتك الصحية.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Badge className="bg-green-100 text-green-800 text-xs">وجبات مكتملة</Badge>
+                  <Badge className="bg-green-100 text-green-800 text-xs">دفع آمن</Badge>
+                  <Badge className="bg-green-100 text-green-800 text-xs">توصيل مجاني</Badge>
+                </div>
+                <Button 
+                  onClick={handlePayForMealPlan}
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg transition-all duration-300"
+                >
+                  <Heart className="w-4 h-4 ml-2" />
+                  دفع خطة الوجبات
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Enhanced Loading State */}
         {isLoading && (

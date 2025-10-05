@@ -11,6 +11,8 @@ const UserProfile = lazy(() => import("@/components/UserProfile").then(module =>
 const CafeteriaMenu = lazy(() => import("@/components/CafeteriaMenu"));
 const DailyMealPlan = lazy(() => import("@/components/DailyMealPlan").then(module => ({ default: module.DailyMealPlan })));
 const ProgressReport = lazy(() => import("@/components/ProgressReport").then(module => ({ default: module.ProgressReport })));
+const PaymentCheckout = lazy(() => import("@/components/PaymentCheckout"));
+const PaymentSuccess = lazy(() => import("@/components/PaymentSuccess"));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -22,7 +24,7 @@ const LoadingSpinner = () => (
   </div>
 );
 
-type AppState = "landing" | "auth" | "onboarding" | "dashboard" | "chat" | "cafeteria" | "profile" | "mealplan" | "progress";
+type AppState = "landing" | "auth" | "onboarding" | "dashboard" | "chat" | "cafeteria" | "profile" | "mealplan" | "progress" | "checkout" | "payment-success";
 type AuthMode = "login" | "register";
 
 interface UserData {
@@ -35,12 +37,22 @@ interface UserData {
   budget: string;
 }
 
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  location: string;
+}
+
 const Index = () => {
   const [currentState, setCurrentState] = useState<AppState>("landing");
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isMealPlanMode, setIsMealPlanMode] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [orderDetails, setOrderDetails] = useState<any>(null);
 
   useEffect(() => {
     // Check if user is already authenticated
@@ -106,6 +118,30 @@ const Index = () => {
     setCurrentState("progress");
   };
 
+  const showCheckout = (items: CartItem[]) => {
+    setCartItems(items);
+    setCurrentState("checkout");
+  };
+
+  const showPaymentSuccess = () => {
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const tax = total * 0.14;
+    setOrderDetails({
+      orderId: `ORD-${Date.now()}`,
+      total: total + tax,
+      items: cartItems,
+      estimatedTime: "15-30 دقيقة",
+      location: "مبنى الطلاب - الدور الأرضي"
+    });
+    setCurrentState("payment-success");
+  };
+
+  const showNewOrder = () => {
+    setCartItems([]);
+    setOrderDetails(null);
+    setCurrentState("cafeteria");
+  };
+
   const handleLogout = () => {
     setCurrentState("landing");
   };
@@ -134,13 +170,17 @@ const Index = () => {
       case "chat":
         return <AIChat onBack={backToDashboard} />;
       case "cafeteria":
-        return <CafeteriaMenu onBack={backToDashboard} isMealPlanMode={isMealPlanMode} selectedDate={selectedDate} />;
+        return <CafeteriaMenu onBack={backToDashboard} isMealPlanMode={isMealPlanMode} selectedDate={selectedDate} onOpenMealPlan={showMealPlan} onOpenCheckout={showCheckout} />;
       case "profile":
         return <UserProfile onBack={backToDashboard} onOpenChat={showChat} />;
       case "mealplan":
-        return <DailyMealPlan onBack={backToDashboard} onOpenCafeteria={showCafeteriaForMealPlan} onDateChange={setSelectedDate} />;
+        return <DailyMealPlan onBack={backToDashboard} onOpenCafeteria={showCafeteriaForMealPlan} onDateChange={setSelectedDate} onOpenCheckout={showCheckout} />;
       case "progress":
         return <ProgressReport onBack={backToDashboard} />;
+      case "checkout":
+        return <PaymentCheckout onBack={backToDashboard} onPaymentSuccess={showPaymentSuccess} cartItems={cartItems} />;
+      case "payment-success":
+        return <PaymentSuccess onBack={backToDashboard} onNewOrder={showNewOrder} orderDetails={orderDetails} />;
       default:
         return <HeroSection onStartRegistration={startRegistration} onLogin={showAuth} />;
     }

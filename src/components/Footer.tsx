@@ -31,11 +31,6 @@ export const Footer = () => {
               </li>
               <li>
                 <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-primary">
-                  قائمة الكافتيريا
-                </Button>
-              </li>
-              <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-primary">
                   المستشار الذكي
                 </Button>
               </li>

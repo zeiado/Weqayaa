@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { dashboardApi } from "@/services/dashboardApi";
+import { DashboardSummaryResponse } from "@/types/dashboard";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { WeqayaLogo } from "./WeqayaLogo";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { RecommendedMeals } from "./RecommendedMeals";
+import { QuickActivities } from "./QuickActivities";
+import { StatisticsView } from "./StatisticsView";
 import { AIChat } from "./AIChat";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -149,6 +155,10 @@ export const Dashboard = ({
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showAIPopup, setShowAIPopup] = useState(false);
 
+  const [summary, setSummary] = useState<DashboardSummaryResponse | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   // Memoized user data fetching
   useEffect(() => {
     const storedUserData = localStorage.getItem('userData');
@@ -168,6 +178,22 @@ export const Dashboard = ({
       }, 2000);
       return () => clearTimeout(timer);
     }
+  }, []);
+
+  useEffect(() => {
+    const loadSummary = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await dashboardApi.getDashboardSummary();
+        setSummary(data);
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load dashboard');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadSummary();
   }, []);
 
   // Memoized computed values
@@ -204,41 +230,41 @@ export const Dashboard = ({
   ], []);
 
   const nutritionGoals = useMemo(() => ({
-    calories: { current: 1200, target: 2000 },
-    protein: { current: 45, target: 80 },
-    water: { current: 6, target: 8 }
-  }), []);
+    calories: { current: summary?.progress.caloriesConsumed ?? 0, target: summary?.progress.caloriesTarget ?? 2000 },
+    protein: { current: summary?.progress.proteinConsumed ?? 0, target: summary?.progress.proteinTarget ?? 80 },
+    water: { current: Math.round((summary?.progress.waterConsumed ?? 0) / 250), target: Math.round((summary?.progress.waterTarget ?? 2000) / 250) }
+  }), [summary]);
 
   // Memoized stats data
   const statsData = useMemo(() => [
     {
       icon: Flame,
-      value: nutritionGoals.calories.current,
+      value: summary?.progress.caloriesConsumed ?? 0,
       label: "سعرات اليوم",
-      progress: (nutritionGoals.calories.current / nutritionGoals.calories.target) * 100,
-      remaining: `${nutritionGoals.calories.target - nutritionGoals.calories.current} سعرة متبقية`,
+      progress: summary?.progress.caloriesPercentage ?? 0,
+      remaining: summary ? `${Math.max(summary.progress.caloriesTarget - summary.progress.caloriesConsumed, 0)} سعرة متبقية` : '—',
       gradientClass: "bg-gradient-primary",
       iconColor: "text-white"
     },
     {
       icon: Activity,
-      value: `${nutritionGoals.protein.current}g`,
+      value: `${summary?.progress.proteinConsumed ?? 0}g`,
       label: "بروتين",
-      progress: (nutritionGoals.protein.current / nutritionGoals.protein.target) * 100,
-      remaining: `${nutritionGoals.protein.target - nutritionGoals.protein.current}g متبقي`,
+      progress: summary?.progress.proteinPercentage ?? 0,
+      remaining: summary ? `${Math.max(summary.progress.proteinTarget - summary.progress.proteinConsumed, 0)}g متبقي` : '—',
       gradientClass: "bg-gradient-secondary",
       iconColor: "text-white"
     },
     {
       icon: Droplets,
-      value: nutritionGoals.water.current,
+      value: Math.round((summary?.progress.waterConsumed ?? 0) / 250),
       label: "أكواب مياه",
-      progress: (nutritionGoals.water.current / nutritionGoals.water.target) * 100,
-      remaining: `${nutritionGoals.water.target - nutritionGoals.water.current} كوب متبقي`,
+      progress: summary?.progress.waterPercentage ?? 0,
+      remaining: summary ? `${Math.max(Math.round((summary.progress.waterTarget - summary.progress.waterConsumed) / 250), 0)} كوب متبقي` : '—',
       gradientClass: "bg-gradient-accent",
       iconColor: "text-white"
     }
-  ], [nutritionGoals]);
+  ], [summary]);
 
   // Memoized callbacks
   const handleCloseAIPopup = useCallback(() => {
@@ -288,12 +314,105 @@ export const Dashboard = ({
           <p className="text-muted-foreground mt-2">استمر في رحلتك نحو الصحة المثالية</p>
         </div>
 
-        {/* Enhanced Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-          {statsData.map((stat, index) => (
-            <StatsCard key={index} {...stat} />
-          ))}
-        </div>
+        {/* Loading / Error */}
+        {isLoading && (
+          <div className="text-center text-muted-foreground">جاري تحميل لوحة التحكم...</div>
+        )}
+        {error && !isLoading && (
+          <div className="text-center text-red-600">{error}</div>
+        )}
+
+        {/* Tabs for Overview and Statistics */}
+        <Tabs defaultValue="overview">
+          <TabsList className="mb-4">
+            <TabsTrigger value="overview">الملخص</TabsTrigger>
+            <TabsTrigger value="statistics">الإحصائيات</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              {statsData.map((stat, index) => (
+                <StatsCard key={index} {...stat} />
+              ))}
+            </div>
+
+            <Card className="glass-card p-6 sm:p-8 bg-gradient-to-br from-primary via-primary/90 to-secondary text-white relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-lg sm:text-xl">مستشار وقاية الذكي</h3>
+                        <p className="text-white/80 text-sm">مدعوم بالذكاء الاصطناعي المتقدم</p>
+                      </div>
+                    </div>
+                    <p className="text-white/90 mb-4 leading-relaxed">
+                      احصل على استشارات غذائية فورية ومخصصة. اسأل عن أي شيء متعلق بالتغذية الصحية واللياقة البدنية
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className="bg-white/20 text-white text-xs">متاح 24/7</Badge>
+                      <Badge className="bg-white/20 text-white text-xs">إجابات فورية</Badge>
+                      <Badge className="bg-white/20 text-white text-xs">مخصص لك</Badge>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button 
+                      variant="secondary" 
+                      className="bg-white text-primary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                      onClick={onOpenChat}
+                    >
+                      <MessageCircle className="w-5 h-5 ml-2" />
+                      ابدأ المحادثة
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="bg-white/20 text-white border-white/30 hover:bg-white/30 w-full sm:w-auto px-6 py-3 text-sm font-medium transition-all duration-300"
+                      onClick={handleShowAIPopup}
+                    >
+                      <Sparkles className="w-4 h-4 ml-2" />
+                      تعرف على المزيد
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    وجبات اليوم المقترحة
+                  </h2>
+                  <p className="text-muted-foreground text-sm mt-1">اختر من أفضل الوجبات الصحية المتاحة</p>
+                </div>
+                <Button variant="outline" size="sm" className="w-full sm:w-auto border-primary/30 text-primary hover:bg-primary/10">
+                  <Calendar className="w-4 h-4 ml-2" />
+                  عرض الأسبوع
+                </Button>
+              </div>
+
+              <RecommendedMeals meals={summary?.recommendedMeals || []} />
+            </div>
+
+            {summary?.quickActivities?.length ? (
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-6">
+                  أنشطة سريعة
+                </h2>
+                <QuickActivities activities={summary.quickActivities} />
+              </div>
+            ) : null}
+          </TabsContent>
+
+          <TabsContent value="statistics">
+            <StatisticsView />
+          </TabsContent>
+        </Tabs>
 
         {/* Enhanced AI Chat Section */}
         <Card className="glass-card p-6 sm:p-8 bg-gradient-to-br from-primary via-primary/90 to-secondary text-white relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
@@ -358,8 +477,8 @@ export const Dashboard = ({
           </div>
           
           <div className="grid gap-4 sm:gap-6">
-            {todaysMeals.map((meal, index) => (
-              <MealCard key={index} meal={meal} index={index} />
+            {(summary?.recommendedMeals || []).map((meal, index) => (
+              <MealCard key={meal.id ?? index} meal={meal} index={index} />
             ))}
           </div>
         </div>
@@ -460,6 +579,13 @@ export const Dashboard = ({
                 <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-300">الملف الشخصي</span>
               </Button>
             )}
+            {/* Quick activities summary (inline) */}
+            {summary?.quickActivities?.slice(0, 1).map((act) => (
+              <Button key={act.id} variant="outline" className="p-6 sm:p-8 h-auto flex-col gap-2 border-2">
+                <div className="text-2xl">{act.icon || '⚡'}</div>
+                <span className="text-sm font-semibold text-foreground">{act.title}</span>
+              </Button>
+            ))}
           </div>
         </div>
       </div>

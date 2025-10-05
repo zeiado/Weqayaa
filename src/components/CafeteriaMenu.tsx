@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Filter, Star, Users, TrendingUp, ArrowLeft, Plus, BarChart3, Info, Scale, Calendar, Loader2, Clock } from 'lucide-react';
+import { Search, MapPin, Filter, Star, Users, TrendingUp, ArrowLeft, Plus, BarChart3, Info, Scale, Calendar, Loader2, Clock, Utensils, ArrowRight, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,7 @@ import { mealPlanApi } from '@/services/mealPlanApi';
 import { MenuResponse, MenuItem, getDietaryTags, getCategoryLabel } from '@/types/menu';
 import { MealType, getMealTypeLabel, getMealTypeIcon, CreateMealPlanRequest } from '@/types/mealPlan';
 import { useToast } from '@/hooks/use-toast';
+import FloatingCartButton from './FloatingCartButton';
 
 // Using MenuItem and MenuResponse from types/menu.ts
 
@@ -37,14 +38,24 @@ const dietaryFilters = [
   { id: 'gluten-free', label: 'خالي الجلوتين', color: 'bg-purple-100 text-purple-800' }
 ];
 
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  location: string;
+}
+
 interface CafeteriaMenuProps {
   onBack: () => void;
   isMealPlanMode?: boolean;
   selectedDate?: string;
   onMealPlanUpdated?: () => void;
+  onOpenMealPlan?: () => void;
+  onOpenCheckout?: (cartItems: CartItem[]) => void;
 }
 
-const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = false, selectedDate: propSelectedDate, onMealPlanUpdated }) => {
+const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = false, selectedDate: propSelectedDate, onMealPlanUpdated, onOpenMealPlan, onOpenCheckout }) => {
   const [menus, setMenus] = useState<MenuResponse[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,6 +69,7 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
   const [isAddingToMealPlan, setIsAddingToMealPlan] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(MealType.Breakfast);
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const { toast } = useToast();
 
   const currentLocation = menus.find(loc => loc.id === selectedLocation);
@@ -65,6 +77,68 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   }) || [];
+
+  // Cart management functions
+  const addToCart = (item: MenuItem) => {
+    const existingItem = cartItems.find(cartItem => cartItem.id === item.id);
+    if (existingItem) {
+      setCartItems(cartItems.map(cartItem =>
+        cartItem.id === item.id
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      ));
+    } else {
+      setCartItems([...cartItems, {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: 1,
+        location: currentLocation?.location || 'غير محدد'
+      }]);
+    }
+    toast({
+      title: "تم إضافة العنصر للسلة",
+      description: `تمت إضافة ${item.name} إلى سلة التسوق`,
+    });
+  };
+
+  const updateCartQuantity = (id: number, quantity: number) => {
+    if (quantity <= 0) {
+      setCartItems(cartItems.filter(item => item.id !== id));
+    } else {
+      setCartItems(cartItems.map(item =>
+        item.id === id ? { ...item, quantity } : item
+      ));
+    }
+  };
+
+  const removeFromCart = (id: number) => {
+    setCartItems(cartItems.filter(item => item.id !== id));
+  };
+
+  const handleCheckout = () => {
+    if (onOpenCheckout) {
+      onOpenCheckout(cartItems);
+    }
+  };
+
+  const handleAddToMealPlanAndCheckout = async (item: MenuItem) => {
+    try {
+      // First add to meal plan
+      await addToMealPlan(item);
+      
+      // Then add to cart for checkout
+      addToCart(item);
+      
+      // Show success message
+      toast({
+        title: "تم إضافة العنصر لخطة الوجبات والسلة",
+        description: `تمت إضافة ${item.name} لخطة الوجبات ويمكنك الآن الدفع`,
+      });
+    } catch (error) {
+      console.error('Error adding to meal plan:', error);
+    }
+  };
 
   const sortedItems = [...filteredItems].sort((a, b) => {
     switch (sortBy) {
@@ -91,11 +165,24 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         page: 1,
         pageSize: 10,
       });
-      setMenus(data);
+      
+      // Remove duplicate locations by name
+      const uniqueMenus = data.reduce((acc: MenuResponse[], current: MenuResponse) => {
+        const existingLocation = acc.find(loc => loc.location === current.location);
+        if (!existingLocation) {
+          acc.push(current);
+        } else {
+          // If we find a duplicate, merge the food items
+          existingLocation.foodItems = [...existingLocation.foodItems, ...current.foodItems];
+        }
+        return acc;
+      }, []);
+      
+      setMenus(uniqueMenus);
       
       // Set first location as selected if available
-      if (data.length > 0 && !menus.find(loc => loc.id === selectedLocation)) {
-        setSelectedLocation(data[0].id);
+      if (uniqueMenus.length > 0 && !menus.find(loc => loc.id === selectedLocation)) {
+        setSelectedLocation(uniqueMenus[0].id);
       }
     } catch (error) {
       console.error('Error fetching menus:', error);
@@ -351,36 +438,52 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
         title={isMealPlanMode ? "اختيار الطعام لخطة الوجبات" : "قائمة الكافتيريا"}
       />
       
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="container mx-auto px-4 py-4">
+
+        {/* Navigation to Meal Plan */}
+        {!isMealPlanMode && onOpenMealPlan && (
+          <div className="mb-4">
+            <Button 
+              onClick={onOpenMealPlan}
+              className="w-full bg-gradient-primary hover:shadow-lg transition-all duration-300"
+            >
+              <Utensils className="w-4 h-4 ml-2" />
+              الانتقال إلى خطة الوجبات
+              <ArrowRight className="w-4 h-4 mr-2" />
+            </Button>
+          </div>
+        )}
 
         {/* Date Picker */}
-        <div className="mb-4 sm:mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-              <label htmlFor="date-picker" className="text-sm font-medium">اختر التاريخ:</label>
+        <Card className="glass-card mb-4">
+          <CardContent className="p-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-primary" />
+                <label htmlFor="date-picker" className="text-sm font-medium">اختر التاريخ:</label>
+              </div>
+              <Input
+                id="date-picker"
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full sm:max-w-xs"
+              />
             </div>
-            <Input
-              id="date-picker"
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full sm:max-w-xs"
-            />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Meal Type Selector for Meal Plan Mode */}
         {isMealPlanMode && (
-          <Card className="glass-card mb-4 sm:mb-6">
-            <CardContent className="pt-4 sm:pt-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mb-4">
+          <Card className="glass-card mb-4">
+            <CardContent className="p-4">
+              <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                  <Clock className="w-4 h-4 text-primary" />
                   <label className="text-sm font-medium">اختر نوع الوجبة:</label>
                 </div>
                 <Select value={selectedMealType.toString()} onValueChange={(value) => setSelectedMealType(parseInt(value) as MealType)}>
-                  <SelectTrigger className="w-full sm:max-w-xs">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="اختر نوع الوجبة" />
                   </SelectTrigger>
                   <SelectContent>
@@ -391,10 +494,8 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-                <label className="text-sm font-medium">الكمية:</label>
                 <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium">الكمية:</label>
                   <Input
                     type="number"
                     min="1"
@@ -420,106 +521,124 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
 
         {/* Location Selector */}
         {!isLoading && menus.length > 0 && (
-          <div className="mb-4 sm:mb-6">
-            <Tabs value={selectedLocation.toString()} onValueChange={(value) => setSelectedLocation(parseInt(value))}>
-              <TabsList className={`grid w-full ${menus.length === 1 ? 'grid-cols-1' : menus.length === 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-3'} mb-4`}>
-                {menus.map((location) => (
-                  <TabsTrigger key={location.id} value={location.id.toString()} className="text-center p-2 sm:p-3">
-                    <div>
-                      <p className="font-medium text-xs sm:text-sm">{location.location}</p>
-                      <p className="text-xs text-muted-foreground">{location.foodItems.length} وجبة متاحة</p>
-                    </div>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          </div>
+          <Card className="glass-card mb-4">
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <label className="text-sm font-medium">اختر الموقع:</label>
+                </div>
+                <Tabs value={selectedLocation.toString()} onValueChange={(value) => setSelectedLocation(parseInt(value))}>
+                  <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2">
+                    {menus.map((location) => (
+                      <TabsTrigger key={location.id} value={location.id.toString()} className="text-center p-3">
+                        <div>
+                          <p className="font-medium text-sm">{location.location}</p>
+                          <p className="text-xs text-muted-foreground">{location.foodItems.length} وجبة متاحة</p>
+                        </div>
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Search and Filters */}
-        <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-          <div className="relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="ابحث عن وجبة..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pr-10"
-            />
-          </div>
+        <Card className="glass-card mb-4">
+          <CardContent className="p-4">
+            <div className="space-y-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="ابحث عن وجبة..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pr-10"
+                />
+              </div>
 
-          {/* Filter Pills */}
-          <div className="space-y-2 sm:space-y-3">
-            <div className="flex flex-wrap gap-1 sm:gap-2">
-              {filterCategories.map((filter) => (
-                <Button
-                  key={filter.id}
-                  variant={selectedFilters.includes(filter.id) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => toggleFilter(filter.id)}
-                  className="text-xs sm:text-sm"
+              {/* Category Filters */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">الفئات:</label>
+                <div className="flex flex-wrap gap-2">
+                  {filterCategories.map((filter) => (
+                    <Button
+                      key={filter.id}
+                      variant={selectedFilters.includes(filter.id) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => toggleFilter(filter.id)}
+                      className="text-xs"
+                    >
+                      {filter.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Dietary Filters */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">الخصائص الغذائية:</label>
+                <div className="flex flex-wrap gap-2">
+                  {dietaryFilters.map((filter) => (
+                    <Badge
+                      key={filter.id}
+                      variant={selectedFilters.includes(filter.id) ? "default" : "secondary"}
+                      className={`cursor-pointer text-xs ${selectedFilters.includes(filter.id) ? '' : filter.color}`}
+                      onClick={() => toggleFilter(filter.id)}
+                    >
+                      {filter.label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sort Options */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">ترتيب حسب:</label>
+                <select 
+                  value={sortBy} 
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-background border border-input rounded-md px-3 py-2 text-sm w-full"
                 >
-                  {filter.label}
-                </Button>
-              ))}
+                  <option value="price_low">⚡ الأقل سعراً</option>
+                  <option value="price_high">💰 الأغلى سعراً</option>
+                  <option value="calories_low">🔥 الأقل سعرات</option>
+                  <option value="protein_high">💪 الأعلى بروتين</option>
+                  <option value="popular">⭐ الأكثر شعبية</option>
+                  <option value="rating">📈 الأكثر تقييماً</option>
+                </select>
+              </div>
             </div>
-
-            <div className="flex flex-wrap gap-1 sm:gap-2">
-              {dietaryFilters.map((filter) => (
-                <Badge
-                  key={filter.id}
-                  variant={selectedFilters.includes(filter.id) ? "default" : "secondary"}
-                  className={`cursor-pointer text-xs ${selectedFilters.includes(filter.id) ? '' : filter.color}`}
-                  onClick={() => toggleFilter(filter.id)}
-                >
-                  {filter.label}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          {/* Sort Options */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <span className="text-sm text-muted-foreground">ترتيب حسب:</span>
-            <select 
-              value={sortBy} 
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-background border border-input rounded-md px-3 py-1 text-sm w-full sm:w-auto"
-            >
-              <option value="price_low">⚡ الأقل سعراً</option>
-              <option value="price_high">💰 الأغلى سعراً</option>
-              <option value="calories_low">🔥 الأقل سعرات</option>
-              <option value="protein_high">💪 الأعلى بروتين</option>
-              <option value="popular">⭐ الأكثر شعبية</option>
-              <option value="rating">📈 الأكثر تقييماً</option>
-            </select>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Food Items Grid */}
         {!isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {sortedItems.map((item) => (
               <Card key={item.id} className="hover:shadow-lg transition-shadow glass-card">
-                <CardHeader className="p-4 sm:p-6">
+                <CardHeader className="p-4">
                   <div className="flex justify-between items-start gap-2">
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-base sm:text-lg truncate">{item.name}</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm text-muted-foreground">
+                      <CardTitle className="text-lg truncate">{item.name}</CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground">
                         {getCategoryLabel(item.category)}
                       </CardDescription>
-                      <p className="text-xs sm:text-sm mt-2 line-clamp-2">{item.description}</p>
+                      <p className="text-sm mt-2 line-clamp-2">{item.description}</p>
                     </div>
                     <div className="text-left shrink-0">
-                      <p className="text-lg sm:text-2xl font-bold text-primary">{item.price}</p>
+                      <p className="text-2xl font-bold text-primary">{item.price}</p>
                       <p className="text-xs text-muted-foreground">جنيه</p>
                     </div>
                   </div>
                 </CardHeader>
                 
-                <CardContent className="p-4 sm:p-6 pt-0 space-y-3 sm:space-y-4">
+                <CardContent className="p-4 pt-0 space-y-3">
                   {/* Nutritional Info */}
-                  <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="flex items-center gap-1">
                       <span>📊</span>
                       <span>{item.calories} سعرة</span>
@@ -555,14 +674,8 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
                     </span>
                   </div>
 
-                  {/* Serving Size */}
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <span>🍽️</span>
-                    <span>حجم الحصة: {item.servingSize}g</span>
-                  </div>
-
                   {/* Action Buttons */}
-                  <div className={`grid gap-2 ${isMealPlanMode ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                  <div className="grid gap-2 grid-cols-2">
                     {!isMealPlanMode && (
                       <Dialog>
                         <DialogTrigger asChild>
@@ -584,7 +697,7 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
                       <Button 
                         size="sm" 
                         disabled={!item.isAvailable || isAddingToMealPlan}
-                        onClick={() => addToMealPlan(item)}
+                        onClick={() => handleAddToMealPlanAndCheckout(item)}
                         className="bg-gradient-primary"
                       >
                         {isAddingToMealPlan ? (
@@ -602,21 +715,12 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
                     ) : (
                       <Button 
                         size="sm" 
-                        disabled={!item.isAvailable || isAddingToMealPlan}
-                        onClick={() => addToMealPlan(item)}
+                        disabled={!item.isAvailable}
+                        onClick={() => addToCart(item)}
                         className="bg-gradient-primary"
                       >
-                        {isAddingToMealPlan ? (
-                          <>
-                            <Loader2 className="h-3 w-3 ml-1 animate-spin" />
-                            جاري الإضافة...
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="h-3 w-3 ml-1" />
-                            اضافه للخطه
-                          </>
-                        )}
+                        <ShoppingCart className="h-3 w-3 ml-1" />
+                        إضافة للسلة
                       </Button>
                     )}
 
@@ -643,45 +747,36 @@ const CafeteriaMenu: React.FC<CafeteriaMenuProps> = ({ onBack, isMealPlanMode = 
 
         {/* Empty State */}
         {!isLoading && sortedItems.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🍽️</div>
-            <h3 className="text-xl font-semibold mb-2">لا توجد وجبات متاحة</h3>
-            <p className="text-muted-foreground mb-4">
-              {menus.length === 0 
-                ? `لا توجد قوائم طعام متاحة للتاريخ ${selectedDate}`
-                : "جرب إزالة بعض المرشحات أو البحث في موقع آخر"
-              }
-            </p>
-            <div className="flex gap-2 justify-center">
-              <Button variant="outline" onClick={() => setSelectedFilters([])}>
-                مسح جميع المرشحات
-              </Button>
-              <Button onClick={() => setSearchQuery('')}>
-                عرض الكل
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* AI Recommendation Banner */}
-        {!isLoading && sortedItems.length > 0 && (
-          <div className="mt-8 bg-gradient-primary p-4 rounded-lg text-white">
-            <div className="flex items-center gap-3">
-              <div className="text-2xl">🤖</div>
-              <div className="flex-1">
-                <h3 className="font-semibold">توصية وقاية الذكية</h3>
-                <p className="text-sm opacity-90">بناءً على أهدافك، ننصحك بوجبة متوازنة من القائمة المتاحة</p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="secondary" size="sm">قبول التوصية</Button>
-                <Button variant="outline" size="sm" className="text-white border-white hover:bg-white/10">
-                  تخصيص أكثر
+          <Card className="glass-card">
+            <CardContent className="p-8 text-center">
+              <div className="text-6xl mb-4">🍽️</div>
+              <h3 className="text-xl font-semibold mb-2">لا توجد وجبات متاحة</h3>
+              <p className="text-muted-foreground mb-4">
+                {menus.length === 0 
+                  ? `لا توجد قوائم طعام متاحة للتاريخ ${selectedDate}`
+                  : "جرب إزالة بعض المرشحات أو البحث في موقع آخر"
+                }
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Button variant="outline" onClick={() => setSelectedFilters([])}>
+                  مسح جميع المرشحات
+                </Button>
+                <Button onClick={() => setSearchQuery('')}>
+                  عرض الكل
                 </Button>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         )}
       </div>
+      
+      {/* Floating Cart Button */}
+      <FloatingCartButton
+        items={cartItems}
+        onUpdateQuantity={updateCartQuantity}
+        onRemoveItem={removeFromCart}
+        onCheckout={handleCheckout}
+      />
       
       <Footer />
     </div>
