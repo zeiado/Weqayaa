@@ -88,7 +88,7 @@ export const NavigationMenu = ({ onNavigate, onLogin, onRegister }: NavigationMe
           variant="outline" 
           size="sm"
           onClick={onLogin}
-          className="text-primary border-primary/30 hover:bg-primary/10 text-xs sm:text-sm px-2 sm:px-3"
+          className="text-primary border-primary/30 hover:bg-primary/10 text-xs sm:text-sm px-2 sm:px-3 h-8 sm:h-9"
         >
           <span className="hidden sm:inline">تسجيل الدخول</span>
           <span className="sm:hidden">دخول</span>
@@ -96,7 +96,7 @@ export const NavigationMenu = ({ onNavigate, onLogin, onRegister }: NavigationMe
         <Button 
           size="sm"
           onClick={onRegister}
-          className="bg-gradient-primary hover:shadow-lg text-xs sm:text-sm px-2 sm:px-3"
+          className="bg-gradient-primary hover:shadow-lg text-xs sm:text-sm px-2 sm:px-3 h-8 sm:h-9"
         >
           <span className="hidden sm:inline">إنشاء حساب</span>
           <span className="sm:hidden">حساب</span>
@@ -111,7 +111,7 @@ export const NavigationMenu = ({ onNavigate, onLogin, onRegister }: NavigationMe
         <Button 
           variant="outline" 
           size="sm"
-          className="flex items-center gap-2 text-foreground hover:bg-primary/10 border-primary/30"
+          className="flex items-center gap-1 sm:gap-2 text-foreground hover:bg-primary/10 border-primary/30 h-8 sm:h-9 px-2 sm:px-3"
         >
           <Menu className="w-4 h-4" />
           <span className="hidden sm:inline">القائمة</span>
