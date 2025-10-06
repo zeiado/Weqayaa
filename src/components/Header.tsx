@@ -78,6 +78,11 @@ export const Header = ({
               />
             ) : (
               <>
+                {/* Navigation Menu for authenticated users */}
+                <NavigationMenu 
+                  onNavigate={onNavigate || (() => {})}
+                />
+                
                 {/* Mobile: Show only essential buttons */}
                 <div className="hidden sm:flex items-center gap-2">
                   <Button 
