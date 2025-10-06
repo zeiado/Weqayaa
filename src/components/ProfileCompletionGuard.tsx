@@ -45,6 +45,7 @@ export const ProfileCompletionGuard = ({
     error: null
   });
   const [showModal, setShowModal] = useState(false);
+  const [isProfileIncomplete, setIsProfileIncomplete] = useState(false);
   const [isCreatingProfile, setIsCreatingProfile] = useState(false);
   const { toast } = useToast();
 
@@ -55,9 +56,10 @@ export const ProfileCompletionGuard = ({
   const checkProfileStatus = async () => {
     try {
       setProfileStatus(prev => ({ ...prev, isLoading: true, error: null }));
-      
+      setIsProfileIncomplete(false);
+
       const profile = await nutritionApi.getProfile();
-      
+
       setProfileStatus({
         hasProfile: true,
         profile,
@@ -67,15 +69,17 @@ export const ProfileCompletionGuard = ({
 
       // Ensure modal is hidden when profile is returned successfully
       setShowModal(false);
+      setIsProfileIncomplete(false);
     } catch (error: any) {
       console.error('Profile check error:', error);
-      
-      // Detect "profile not completed" / "not found" cases only
-      const status = error?.response?.status ?? error?.status ?? null;
-      const code = error?.code ?? null;
-      const message = String(error?.message ?? '').toLowerCase();
 
-      const isProfileIncomplete =
+      // Normalize response details
+      const status = error?.response?.status ?? error?.status ?? null;
+      const code = error?.response?.data?.code ?? error?.code ?? null;
+      const message = String(error?.response?.data?.message ?? error?.message ?? '').toLowerCase();
+
+      // Only treat these cases as "profile incomplete"
+      const detectedIncomplete =
         status === 404 ||
         code === 'PROFILE_INCOMPLETE' ||
         /profile.*incomplete|not found|ملف غير مكتمل/.test(message);
@@ -84,16 +88,17 @@ export const ProfileCompletionGuard = ({
         hasProfile: false,
         profile: null,
         isLoading: false,
-        error: isProfileIncomplete ? 'ملف غير مكتمل' : 'حدث خطأ أثناء التحقق'
+        error: detectedIncomplete ? 'ملف غير مكتمل' : (message || 'حدث خطأ أثناء التحقق')
       });
-      
-      if (isProfileIncomplete) {
-        // Show modal only for the specific "incomplete profile" case
-        setTimeout(() => {
-          setShowModal(true);
-        }, 500);
+
+      setIsProfileIncomplete(detectedIncomplete);
+
+      if (detectedIncomplete) {
+        // show modal only for profile-incomplete case
+        setShowModal(true);
       } else {
-        // For other errors keep modal closed; optionally notify user
+        // keep modal closed for other errors; optionally inform user
+        setShowModal(false);
         toast?.({
           title: 'حدث خطأ',
           description: 'تعذر التحقق من ملفك الشخصي. حاول مرة أخرى لاحقًا.',
@@ -104,16 +109,12 @@ export const ProfileCompletionGuard = ({
   };
 
   const handleCompleteProfile = () => {
-    if (onCompleteProfile) {
-      onCompleteProfile();
-    }
+    if (onCompleteProfile) onCompleteProfile();
     setShowModal(false);
   };
 
   const handleSkip = () => {
-    if (onSkip) {
-      onSkip();
-    }
+    if (onSkip) onSkip();
     setShowModal(false);
   };
 
@@ -121,14 +122,11 @@ export const ProfileCompletionGuard = ({
     checkProfileStatus();
   };
 
-  // Show loading state while checking profile
+  // Show simple loader while checking profile
   if (profileStatus.isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-wellness flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground">جاري التحقق من ملفك الشخصي...</p>
-        </div>
+      <div className="w-full h-full flex items-center justify-center">
+        <span>جاري التحقق من الملف...</span>
       </div>
     );
   }
@@ -138,11 +136,10 @@ export const ProfileCompletionGuard = ({
     return <>{children}</>;
   }
 
-  // If no profile or error, show completion modal
+  // No profile: render children + modal (modal will only open when isProfileIncomplete === true)
   return (
     <>
       {children}
-      
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader className="text-center">

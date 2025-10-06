@@ -39,9 +39,13 @@ export const ProfileCompletionModal = ({
   showSkipOption = true,
   isProfileIncomplete
 }: ProfileCompletionModalProps) => {
-  // determine if the error indicates an incomplete profile.
-  // caller can pass isProfileIncomplete to be explicit; otherwise infer from error text.
   const inferredIncomplete = isProfileIncomplete ?? /profile.*incomplete|not found|ملف غير مكتمل/i.test(error ?? '');
+
+  // If there's no indication the profile is incomplete and there's no error to show,
+  // don't render the modal at all (prevents popup when profile is complete).
+  if (!inferredIncomplete && !error) {
+    return null;
+  }
 
   // If there's an error but it's NOT the "profile incomplete" case, show a simple error modal
   if (error && !inferredIncomplete) {
@@ -50,39 +54,23 @@ export const ProfileCompletionModal = ({
         <DialogContent className="max-w-md">
           <DialogHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center glow-primary">
-                <AlertCircle className="w-8 h-8 text-white" />
-              </div>
             </div>
             <DialogTitle className="text-2xl font-bold text-foreground">حدث خطأ</DialogTitle>
-            <DialogDescription className="text-muted-foreground text-base">
-              حدث خطأ أثناء التحقق من ملفك الشخصي. حاول مرة أخرى لاحقًا.
-            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 mt-2">
-            <Card className="p-4 bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
-              <p className="text-sm text-orange-800 dark:text-orange-200">{error}</p>
-            </Card>
-
-            <div className="flex justify-end gap-2">
-              <Button variant="ghost" onClick={onClose}>إغلاق</Button>
-            </div>
           </div>
         </DialogContent>
       </Dialog>
     );
   }
 
-  // Default: render the profile-completion UI when inferredIncomplete === true (or no error)
+  // Default: render the profile-completion UI only when inferredIncomplete === true
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center glow-primary">
-              <User className="w-8 h-8 text-white" />
-            </div>
           </div>
           <DialogTitle className="text-2xl font-bold text-foreground">
             أكمل ملفك الشخصي
