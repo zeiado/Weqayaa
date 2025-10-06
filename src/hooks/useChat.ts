@@ -33,11 +33,14 @@ export const useChat = () => {
 
   // Load specific conversation
   const loadConversation = useCallback(async (conversationId: number) => {
+    console.log('useChat: Loading conversation', conversationId);
     setState(prev => ({ ...prev, loading: true, error: null }));
     try {
       const conversation = await chatApi.getConversation(conversationId);
+      console.log('useChat: Conversation loaded', conversation);
       setState(prev => ({ ...prev, currentConversation: conversation, loading: false }));
     } catch (error) {
+      console.error('useChat: Error loading conversation', error);
       const errorMessage = chatApi.handleApiError(error);
       setState(prev => ({ ...prev, error: errorMessage, loading: false }));
     }

@@ -44,9 +44,22 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
   // Use local messages if we have them, otherwise use API messages
   const messages = localMessages.length > 0 ? localMessages : apiMessages;
 
+  // Debug logging
+  console.log('AIChat Debug:', {
+    conversationId,
+    currentConversationId,
+    currentConversation,
+    apiMessages,
+    localMessages,
+    messages,
+    loading,
+    error
+  });
+
   // Load conversation if conversationId is provided
   useEffect(() => {
     if (conversationId && conversationId !== currentConversationId) {
+      console.log('Loading conversation:', conversationId);
       setCurrentConversationId(conversationId);
       loadConversation(conversationId);
     }
