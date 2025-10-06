@@ -25,6 +25,8 @@ interface ProfileCompletionModalProps {
   isLoading?: boolean;
   error?: string | null;
   showSkipOption?: boolean;
+  // new prop: explicit signal from caller that profile is incomplete (optional)
+  isProfileIncomplete?: boolean;
 }
 
 export const ProfileCompletionModal = ({
@@ -34,8 +36,45 @@ export const ProfileCompletionModal = ({
   onSkip,
   isLoading = false,
   error = null,
-  showSkipOption = true
+  showSkipOption = true,
+  isProfileIncomplete
 }: ProfileCompletionModalProps) => {
+  // determine if the error indicates an incomplete profile.
+  // caller can pass isProfileIncomplete to be explicit; otherwise infer from error text.
+  const inferredIncomplete = isProfileIncomplete ?? /profile.*incomplete|not found|ملف غير مكتمل/i.test(error ?? '');
+
+  // If there's an error but it's NOT the "profile incomplete" case, show a simple error modal
+  if (error && !inferredIncomplete) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center glow-primary">
+                <AlertCircle className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <DialogTitle className="text-2xl font-bold text-foreground">حدث خطأ</DialogTitle>
+            <DialogDescription className="text-muted-foreground text-base">
+              حدث خطأ أثناء التحقق من ملفك الشخصي. حاول مرة أخرى لاحقًا.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-2">
+            <Card className="p-4 bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
+              <p className="text-sm text-orange-800 dark:text-orange-200">{error}</p>
+            </Card>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={onClose}>إغلاق</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Default: render the profile-completion UI when inferredIncomplete === true (or no error)
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -141,13 +180,7 @@ export const ProfileCompletionModal = ({
           {/* Error Message - Only show user-friendly messages */}
           {error && (
             <Card className="p-4 bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
-              <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400">
-                <AlertCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">ملفك الشخصي غير مكتمل</span>
-              </div>
-              <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
-                نحتاج إلى بعض المعلومات الإضافية لتقديم أفضل تجربة لك
-              </p>
+              <p className="text-sm text-orange-800 dark:text-orange-200">{error}</p>
             </Card>
           )}
 
@@ -158,29 +191,12 @@ export const ProfileCompletionModal = ({
               className="flex-1 bg-gradient-primary hover:shadow-lg transition-all duration-300"
               disabled={isLoading}
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin ml-2" />
-                  جاري التحميل...
-                </>
-              ) : (
-                <>
-                  <User className="w-4 h-4 ml-2" />
-                  أكمل ملفي الشخصي
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                </>
-              )}
+              أكمل الآن
             </Button>
             
             {showSkipOption && onSkip && (
-              <Button 
-                variant="ghost" 
-                onClick={onSkip}
-                className="sm:w-auto text-muted-foreground hover:text-foreground"
-                disabled={isLoading}
-              >
-                <X className="w-4 h-4 ml-2" />
-                تخطي الآن
+              <Button variant="ghost" onClick={onSkip} disabled={isLoading}>
+                تخطى
               </Button>
             )}
           </div>
@@ -188,9 +204,7 @@ export const ProfileCompletionModal = ({
           {/* Skip Warning */}
           {showSkipOption && (
             <div className="text-center">
-              <p className="text-xs text-muted-foreground">
-                يمكنك تخطي هذا الآن، لكن بعض المميزات قد لا تعمل بشكل كامل
-              </p>
+              <p className="text-muted-foreground text-sm">يمكنك إكمال الملف لاحقًا من صفحة الإعدادات.</p>
             </div>
           )}
         </div>
