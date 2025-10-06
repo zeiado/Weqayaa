@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { dashboardApi, HttpError } from "@/services/dashboardApi";
 import { DashboardSummaryResponse } from "@/types/dashboard";
+import { debugApiConnection } from "@/utils/debugApi";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -187,14 +188,26 @@ export const Dashboard = ({
       setError(null);
       setNotFound(false);
       try {
+        console.log('🔄 Loading dashboard summary...');
         const data = await dashboardApi.getDashboardSummary();
+        console.log('📊 Dashboard data received:', data);
         setSummary(data);
+        console.log('✅ Dashboard summary set successfully');
       } catch (e: any) {
-        if (e instanceof HttpError && e.status === 404) {
-          setNotFound(true);
-          setError('لم يتم العثور على ملفك الصحي. قد تحتاج إلى إنشاء الملف أولاً أو المحاولة مرة أخرى.');
+        console.error('Dashboard load error:', e);
+        if (e instanceof HttpError) {
+          if (e.status === 404) {
+            setNotFound(true);
+            setError('لم يتم العثور على ملفك الصحي. قد تحتاج إلى إنشاء الملف أولاً أو المحاولة مرة أخرى.');
+          } else if (e.status === 401) {
+            setError('انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.');
+          } else if (e.status === 500) {
+            setError('خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً.');
+          } else {
+            setError(`خطأ في تحميل البيانات: ${e.message}`);
+          }
         } else {
-          setError(e?.message || 'Failed to load dashboard');
+          setError('فشل في تحميل لوحة التحكم. تحقق من اتصالك بالإنترنت.');
         }
       } finally {
         setIsLoading(false);
@@ -211,11 +224,20 @@ export const Dashboard = ({
       const data = await dashboardApi.getDashboardSummary();
       setSummary(data);
     } catch (e: any) {
-      if (e instanceof HttpError && e.status === 404) {
-        setNotFound(true);
-        setError('لم يتم العثور على ملفك الصحي. برجاء إنشاء الملف أولاً.');
+      console.error('Dashboard retry error:', e);
+      if (e instanceof HttpError) {
+        if (e.status === 404) {
+          setNotFound(true);
+          setError('لم يتم العثور على ملفك الصحي. برجاء إنشاء الملف أولاً.');
+        } else if (e.status === 401) {
+          setError('انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.');
+        } else if (e.status === 500) {
+          setError('خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً.');
+        } else {
+          setError(`خطأ في تحميل البيانات: ${e.message}`);
+        }
       } else {
-        setError(e?.message || 'Failed to load dashboard');
+        setError('فشل في تحميل لوحة التحكم. تحقق من اتصالك بالإنترنت.');
       }
     } finally {
       setIsLoading(false);
@@ -351,6 +373,14 @@ export const Dashboard = ({
               <Button onClick={retryLoadSummary} variant="outline" size="sm" className="border-primary/30 text-primary hover:bg-primary/10">
                 إعادة المحاولة
               </Button>
+              <Button 
+                onClick={() => debugApiConnection()} 
+                variant="outline" 
+                size="sm" 
+                className="border-orange-300 text-orange-600 hover:bg-orange-50"
+              >
+                تشخيص المشكلة
+              </Button>
               {notFound && onOpenProfile && (
                 <Button onClick={onOpenProfile} variant="outline" size="sm" className="border-primary/30 text-primary hover:bg-primary/10">
                   إنشاء/استكمال الملف الصحي
@@ -360,6 +390,9 @@ export const Dashboard = ({
           </div>
         )}
 
+        {/* Show dashboard content if not loading and no error, or if we have fallback data */}
+        {(!isLoading && !error) || summary ? (
+        <div>
         {/* Tabs for Overview and Statistics */}
         <Tabs defaultValue="overview">
           <TabsList className="mb-4">
@@ -451,7 +484,19 @@ export const Dashboard = ({
             <StatisticsView />
           </TabsContent>
         </Tabs>
-
+        </div>
+        ) : (
+          <div className="text-center text-muted-foreground py-8">
+            <p>لا توجد بيانات متاحة حالياً</p>
+            <Button 
+              onClick={retryLoadSummary} 
+              variant="outline" 
+              className="mt-4"
+            >
+              إعادة المحاولة
+            </Button>
+          </div>
+        )}
 
         {/* Enhanced Today's Recommended Meals */}
         <div>

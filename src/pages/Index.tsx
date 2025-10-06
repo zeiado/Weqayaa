@@ -6,7 +6,7 @@ import { authApi } from "@/services/authApi";
 
 // Lazy load heavy components
 const Dashboard = lazy(() => import("@/components/Dashboard").then(module => ({ default: module.Dashboard })));
-const AIChat = lazy(() => import("@/components/AIChat").then(module => ({ default: module.AIChat })));
+const ChatInterface = lazy(() => import("@/components/ChatInterface").then(module => ({ default: module.ChatInterface })));
 const UserProfile = lazy(() => import("@/components/UserProfile").then(module => ({ default: module.UserProfile })));
 const CafeteriaMenu = lazy(() => import("@/components/CafeteriaMenu"));
 const DailyMealPlan = lazy(() => import("@/components/DailyMealPlan").then(module => ({ default: module.DailyMealPlan })));
@@ -168,7 +168,7 @@ const Index = () => {
           onOpenProgressReport={showProgressReport}
         />;
       case "chat":
-        return <AIChat onBack={backToDashboard} />;
+        return <ChatInterface onBack={backToDashboard} />;
       case "cafeteria":
         return <CafeteriaMenu onBack={backToDashboard} isMealPlanMode={isMealPlanMode} selectedDate={selectedDate} onOpenMealPlan={showMealPlan} onOpenCheckout={showCheckout} />;
       case "profile":
