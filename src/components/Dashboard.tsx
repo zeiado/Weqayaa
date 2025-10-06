@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { dashboardApi } from "@/services/dashboardApi";
+import { dashboardApi, HttpError } from "@/services/dashboardApi";
 import { DashboardSummaryResponse } from "@/types/dashboard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -158,6 +158,7 @@ export const Dashboard = ({
   const [summary, setSummary] = useState<DashboardSummaryResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState<boolean>(false);
 
   // Memoized user data fetching
   useEffect(() => {
@@ -188,7 +189,12 @@ export const Dashboard = ({
         const data = await dashboardApi.getDashboardSummary();
         setSummary(data);
       } catch (e: any) {
-        setError(e?.message || 'Failed to load dashboard');
+        if (e instanceof HttpError && e.status === 404) {
+          setNotFound(true);
+          setError('لم يتم العثور على ملفك الصحي. برجاء إنشاء الملف أولاً.');
+        } else {
+          setError(e?.message || 'Failed to load dashboard');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -319,7 +325,14 @@ export const Dashboard = ({
           <div className="text-center text-muted-foreground">جاري تحميل لوحة التحكم...</div>
         )}
         {error && !isLoading && (
-          <div className="text-center text-red-600">{error}</div>
+          <div className="text-center text-red-600 space-y-3">
+            <div>{error}</div>
+            {notFound && onOpenProfile && (
+              <Button onClick={onOpenProfile} variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+                إنشاء/استكمال الملف الصحي
+              </Button>
+            )}
+          </div>
         )}
 
         {/* Tabs for Overview and Statistics */}
@@ -414,52 +427,6 @@ export const Dashboard = ({
           </TabsContent>
         </Tabs>
 
-        {/* Enhanced AI Chat Section */}
-        <Card className="glass-card p-6 sm:p-8 bg-gradient-to-br from-primary via-primary/90 to-secondary text-white relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div className="relative z-10">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg sm:text-xl">مستشار وقاية الذكي</h3>
-                    <p className="text-white/80 text-sm">مدعوم بالذكاء الاصطناعي المتقدم</p>
-                  </div>
-                </div>
-                <p className="text-white/90 mb-4 leading-relaxed">
-                  احصل على استشارات غذائية فورية ومخصصة. اسأل عن أي شيء متعلق بالتغذية الصحية واللياقة البدنية
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-white/20 text-white text-xs">متاح 24/7</Badge>
-                  <Badge className="bg-white/20 text-white text-xs">إجابات فورية</Badge>
-                  <Badge className="bg-white/20 text-white text-xs">مخصص لك</Badge>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  variant="secondary" 
-                  className="bg-white text-primary hover:bg-white/90 w-full sm:w-auto px-8 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={onOpenChat}
-                >
-                  <MessageCircle className="w-5 h-5 ml-2" />
-                  ابدأ المحادثة
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="bg-white/20 text-white border-white/30 hover:bg-white/30 w-full sm:w-auto px-6 py-3 text-sm font-medium transition-all duration-300"
-                  onClick={handleShowAIPopup}
-                >
-                  <Sparkles className="w-4 h-4 ml-2" />
-                  تعرف على المزيد
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
 
         {/* Enhanced Today's Recommended Meals */}
         <div>

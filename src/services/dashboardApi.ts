@@ -1,6 +1,15 @@
 // Dashboard API Service
 import { DashboardSummaryResponse, RecommendedMeal, UserStatisticsResponse, StatisticsPeriod } from "@/types/dashboard";
 
+export class HttpError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+    this.name = 'HttpError';
+  }
+}
+
 const API_BASE_URL = 'https://weqaya-api-v1.runasp.net/api';
 
 class DashboardApiService {
@@ -28,7 +37,8 @@ class DashboardApiService {
       const response = await fetch(url, config);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error((errorData as any).message || `HTTP error! status: ${response.status}`);
+        const message = (errorData as any)?.message || `HTTP error! status: ${response.status}`;
+        throw new HttpError(message, response.status);
       }
       return await response.json();
     } catch (error) {
