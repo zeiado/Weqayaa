@@ -16,18 +16,20 @@ import {
   Clock, 
   AlertCircle,
   Loader2,
-  Trash2
+  Trash2,
+  ArrowLeft
 } from "lucide-react";
 import { useChat } from "@/hooks/useChat";
 import { ConversationResponse, ChatType } from "@/types/chat";
 import { FeedbackManager } from "@/utils/feedbackManager";
 
 interface ConversationListProps {
+  onBack: () => void;
   onSelectConversation: (conversationId: number) => void;
   selectedConversationId?: number;
 }
 
-export const ConversationList = ({ onSelectConversation, selectedConversationId }: ConversationListProps) => {
+export const ConversationList = ({ onBack, onSelectConversation, selectedConversationId }: ConversationListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newConversationTitle, setNewConversationTitle] = useState("");
@@ -115,6 +117,15 @@ export const ConversationList = ({ onSelectConversation, selectedConversationId 
       <div className="p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              العودة
+            </Button>
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
               <MessageSquare className="w-5 h-5 text-white" />
             </div>

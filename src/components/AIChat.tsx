@@ -115,8 +115,8 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
     "نصائح لزيادة الوزن"
   ];
 
-  // Show welcome message if no conversation is loaded
-  const displayMessages = messages.length === 0 ? [
+  // Show welcome message only if no conversation is loaded and no messages
+  const displayMessages = (messages.length === 0 && !currentConversationId) ? [
     {
       id: "welcome",
       text: "السلام عليكم! أنا مستشار وقاية الذكي. كيف يمكنني مساعدتك في تحسين نظامك الغذائي اليوم؟",
@@ -161,6 +161,16 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
         {/* Messages */}
         <ScrollArea className="flex-1 mb-4 sm:mb-6">
           <div className="space-y-4 sm:space-y-6">
+            {/* Loading state for conversation */}
+            {loading && currentConversationId && displayMessages.length === 0 && (
+              <div className="flex justify-center items-center py-8">
+                <div className="flex items-center gap-3">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <span className="text-muted-foreground">جاري تحميل المحادثة...</span>
+                </div>
+              </div>
+            )}
+            
             {displayMessages.map((message, index) => (
               <div
                 key={message.id}
