@@ -139,11 +139,11 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
   ] : messages;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-wellness relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-10 w-32 h-32 bg-gradient-to-r from-blue-400/10 to-purple-400/10 dark:from-blue-400/20 dark:to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-10 w-40 h-40 bg-gradient-to-r from-green-400/10 to-blue-400/10 dark:from-green-400/20 dark:to-blue-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-20 right-10 w-32 h-32 bg-primary-glow/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 left-10 w-40 h-40 bg-secondary-glow/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
 
       <Header 
@@ -194,12 +194,12 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
                   {/* Avatar */}
                   <div className="relative">
                     <Avatar className={`w-8 h-8 sm:w-10 sm:h-10 ring-2 ring-white/20 shadow-lg ${
-                      message.isUser ? 'ring-blue-500/30' : 'ring-purple-500/30'
+                      message.isUser ? 'ring-primary/30' : 'ring-secondary/30'
                     }`}>
                       <AvatarFallback className={`text-sm font-bold ${
                         message.isUser 
-                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
-                          : 'bg-gradient-to-r from-purple-500 to-purple-600 text-white'
+                          ? 'bg-gradient-primary text-white' 
+                          : 'bg-gradient-secondary text-white'
                       }`}>
                         {message.isUser ? 'أ' : 'و'}
                       </AvatarFallback>
@@ -216,14 +216,14 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
                   }`}>
                     <Card className={`p-4 sm:p-5 shadow-lg border-0 transition-all duration-300 hover:shadow-xl ${
                       message.isUser 
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white ml-auto' 
+                        ? 'bg-gradient-primary text-white ml-auto' 
                         : 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-gray-800 dark:text-gray-200 mr-auto'
                     }`}>
                       <p className="text-sm sm:text-base leading-relaxed font-medium">{message.text}</p>
                       
                       {/* Message timestamp */}
                       <div className={`text-xs mt-2 opacity-70 ${
-                        message.isUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
+                        message.isUser ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
                       }`}>
                         {message.timestamp.toLocaleTimeString('ar-SA', { 
                           hour: '2-digit', 
@@ -235,7 +235,7 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
                     {/* Message tail */}
                     <div className={`absolute top-4 w-0 h-0 ${
                       message.isUser 
-                        ? 'right-[-8px] border-l-[8px] border-l-blue-500 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent'
+                        ? 'right-[-8px] border-l-[8px] border-l-primary border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent'
                         : 'left-[-8px] border-r-[8px] border-r-white/90 dark:border-r-gray-800/90 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent'
                     }`}></div>
                   </div>
@@ -247,8 +247,8 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
             {sendingMessage && (
               <div className="flex justify-end animate-fade-in">
                 <div className="flex items-start gap-3 max-w-[80%] flex-row-reverse">
-                  <Avatar className="w-8 h-8 sm:w-10 sm:h-10 ring-2 ring-purple-500/30 shadow-lg">
-                    <AvatarFallback className="bg-gradient-to-r from-purple-500 to-purple-600 text-white text-sm font-bold">
+                  <Avatar className="w-8 h-8 sm:w-10 sm:h-10 ring-2 ring-secondary/30 shadow-lg">
+                    <AvatarFallback className="bg-gradient-secondary text-white text-sm font-bold">
                       و
                     </AvatarFallback>
                   </Avatar>
@@ -280,10 +280,10 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
                   key={index}
                   variant="outline"
                   size="sm"
-                  className="text-sm h-auto py-3 px-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all duration-300 group"
+                  className="text-sm h-auto py-3 px-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-gray-200 dark:border-gray-700 hover:bg-primary/10 dark:hover:bg-primary/20 hover:border-primary/30 dark:hover:border-primary/60 hover:shadow-md transition-all duration-300 group"
                   onClick={() => handleSuggestedQuestion(action)}
                 >
-                  <span className="group-hover:text-blue-600 transition-colors duration-300">{action}</span>
+                  <span className="group-hover:text-primary transition-colors duration-300">{action}</span>
                 </Button>
               ))}
             </div>
@@ -302,10 +302,10 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
                   key={index}
                   variant="outline"
                   size="sm"
-                  className="text-sm h-auto py-3 px-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-600 hover:shadow-md transition-all duration-300 group"
+                  className="text-sm h-auto py-3 px-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-gray-200 dark:border-gray-700 hover:bg-secondary/10 dark:hover:bg-secondary/20 hover:border-secondary/30 dark:hover:border-secondary/60 hover:shadow-md transition-all duration-300 group"
                   onClick={() => handleSuggestedQuestion(question)}
                 >
-                  <span className="group-hover:text-purple-600 transition-colors duration-300">{question}</span>
+                  <span className="group-hover:text-secondary transition-colors duration-300">{question}</span>
                 </Button>
               ))}
             </div>
@@ -320,14 +320,14 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="shrink-0 w-10 h-10 rounded-full bg-white/50 dark:bg-gray-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300"
+                className="shrink-0 w-10 h-10 rounded-full bg-white/50 dark:bg-gray-700/50 hover:bg-primary/10 dark:hover:bg-primary/20 hover:border-primary/30 dark:hover:border-primary/60 transition-all duration-300"
               >
                 <Camera className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </Button>
               <Button 
                 variant="outline" 
                 size="icon" 
-                className="shrink-0 w-10 h-10 rounded-full bg-white/50 dark:bg-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300 dark:hover:border-green-600 transition-all duration-300"
+                className="shrink-0 w-10 h-10 rounded-full bg-white/50 dark:bg-gray-700/50 hover:bg-secondary/10 dark:hover:bg-secondary/20 hover:border-secondary/30 dark:hover:border-secondary/60 transition-all duration-300"
               >
                 <Mic className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </Button>
@@ -339,13 +339,13 @@ export const AIChat = ({ onBack, conversationId }: AIChatProps) => {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="اكتب سؤالك هنا..."
-                className="text-right text-sm bg-white/50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 focus:ring-blue-400/20 dark:focus:ring-blue-500/20 rounded-xl pr-12 py-3 text-gray-900 dark:text-gray-100"
+                className="text-right text-sm bg-white/50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 focus:border-primary dark:focus:border-primary focus:ring-primary/20 dark:focus:ring-primary/20 rounded-xl pr-12 py-3 text-gray-900 dark:text-gray-100"
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 disabled={sendingMessage}
               />
               <Button 
                 onClick={handleSendMessage} 
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shrink-0 w-8 h-8 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-gradient-primary hover:shadow-lg shrink-0 w-8 h-8 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
                 disabled={sendingMessage || !inputText.trim()}
               >
                 {sendingMessage ? (

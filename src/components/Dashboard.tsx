@@ -498,27 +498,6 @@ export const Dashboard = ({
           </div>
         )}
 
-        {/* Enhanced Today's Recommended Meals */}
-        <div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                وجبات اليوم المقترحة
-              </h2>
-              <p className="text-muted-foreground text-sm mt-1">اختر من أفضل الوجبات الصحية المتاحة</p>
-            </div>
-            <Button variant="outline" size="sm" className="w-full sm:w-auto border-primary/30 text-primary hover:bg-primary/10">
-              <Calendar className="w-4 h-4 ml-2" />
-              عرض الأسبوع
-            </Button>
-          </div>
-          
-          <div className="grid gap-4 sm:gap-6">
-            {(summary?.recommendedMeals || []).map((meal, index) => (
-              <MealCard key={meal.id ?? index} meal={meal} index={index} />
-            ))}
-          </div>
-        </div>
 
         {/* Enhanced Premium Upgrade Banner */}
         <Card className="glass-card p-6 sm:p-8 bg-gradient-to-br from-secondary via-secondary/90 to-accent text-white relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
