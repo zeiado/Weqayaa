@@ -616,13 +616,6 @@ export const Dashboard = ({
                 <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors duration-300">الملف الشخصي</span>
               </Button>
             )}
-            {/* Quick activities summary (inline) */}
-            {summary?.quickActivities?.slice(0, 1).map((act) => (
-              <Button key={act.id} variant="outline" className="p-6 sm:p-8 h-auto flex-col gap-2 border-2">
-                <div className="text-2xl">{act.icon || '⚡'}</div>
-                <span className="text-sm font-semibold text-foreground">{act.title}</span>
-              </Button>
-            ))}
           </div>
         </div>
       </div>
