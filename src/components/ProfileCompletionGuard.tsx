@@ -64,21 +64,42 @@ export const ProfileCompletionGuard = ({
         isLoading: false,
         error: null
       });
+
+      // Ensure modal is hidden when profile is returned successfully
+      setShowModal(false);
     } catch (error: any) {
       console.error('Profile check error:', error);
       
-      // If profile doesn't exist (404) or other error, show completion modal
+      // Detect "profile not completed" / "not found" cases only
+      const status = error?.response?.status ?? error?.status ?? null;
+      const code = error?.code ?? null;
+      const message = String(error?.message ?? '').toLowerCase();
+
+      const isProfileIncomplete =
+        status === 404 ||
+        code === 'PROFILE_INCOMPLETE' ||
+        /profile.*incomplete|not found|ملف غير مكتمل/.test(message);
+
       setProfileStatus({
         hasProfile: false,
         profile: null,
         isLoading: false,
-        error: 'ملف غير مكتمل' // Hide technical error details
+        error: isProfileIncomplete ? 'ملف غير مكتمل' : 'حدث خطأ أثناء التحقق'
       });
       
-      // Show modal after a short delay to allow UI to settle
-      setTimeout(() => {
-        setShowModal(true);
-      }, 500);
+      if (isProfileIncomplete) {
+        // Show modal only for the specific "incomplete profile" case
+        setTimeout(() => {
+          setShowModal(true);
+        }, 500);
+      } else {
+        // For other errors keep modal closed; optionally notify user
+        toast?.({
+          title: 'حدث خطأ',
+          description: 'تعذر التحقق من ملفك الشخصي. حاول مرة أخرى لاحقًا.',
+          variant: 'destructive'
+        });
+      }
     }
   };
 
