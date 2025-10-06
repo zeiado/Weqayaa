@@ -53,21 +53,53 @@ export const ProgressMetricsForm: React.FC<ProgressMetricsFormProps> = ({
     
     try {
       setIsLoading(true);
-      await progressApi.updateProgressMetrics(metrics);
+      
+      // Filter out undefined values and convert date to ISO format
+      const filteredMetrics = Object.fromEntries(
+        Object.entries(metrics).filter(([key, value]) => value !== undefined && value !== null && value !== '')
+      );
+      
+      // Ensure date is in ISO format
+      if (filteredMetrics.date) {
+        const date = new Date(filteredMetrics.date);
+        filteredMetrics.date = date.toISOString();
+      }
+      
+      const response = await progressApi.updateProgressMetrics(filteredMetrics as ProgressMetrics);
       
       toast({
         title: "تم حفظ البيانات! ✅",
-        description: "تم حفظ مقاييس التقدم بنجاح",
+        description: response.message || "تم حفظ مقاييس التقدم بنجاح",
       });
       
       if (onMetricsUpdated) {
         onMetricsUpdated();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating progress metrics:', error);
+      
+      // Handle different types of errors
+      let errorTitle = "خطأ في حفظ البيانات";
+      let errorDescription = "حدث خطأ أثناء حفظ مقاييس التقدم. يرجى المحاولة مرة أخرى.";
+      
+      if (error.message) {
+        if (error.message.includes('400')) {
+          errorTitle = "خطأ في البيانات المدخلة";
+          errorDescription = "يرجى التحقق من صحة البيانات المدخلة";
+        } else if (error.message.includes('404')) {
+          errorTitle = "الملف الشخصي غير موجود";
+          errorDescription = "يرجى إنشاء ملف شخصي أولاً";
+        } else if (error.message.includes('500')) {
+          errorTitle = "خطأ في الخادم";
+          errorDescription = "حدث خطأ في الخادم. يرجى المحاولة لاحقاً";
+        } else {
+          errorDescription = error.message;
+        }
+      }
+      
       toast({
-        title: "خطأ في حفظ البيانات",
-        description: "حدث خطأ أثناء حفظ مقاييس التقدم. يرجى المحاولة مرة أخرى.",
+        title: errorTitle,
+        description: errorDescription,
         variant: "destructive",
       });
     } finally {

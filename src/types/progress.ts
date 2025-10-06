@@ -1,15 +1,15 @@
 // Progress Report Types and Interfaces
 
 export interface ProgressMetrics {
-  date: string;
-  weight?: number;
-  bodyFat?: number;
-  muscleMass?: number;
-  waterIntake?: number;
-  steps?: number;
-  caloriesBurned?: number;
-  sleepHours?: number;
-  mood?: number; // 1-10 scale
+  date: string; // ISO 8601 format (YYYY-MM-DDTHH:mm:ssZ)
+  weight?: number; // Weight in kg
+  bodyFat?: number; // Body fat percentage
+  muscleMass?: number; // Muscle mass in kg
+  waterIntake?: number; // Water intake in ml
+  steps?: number; // Number of steps taken
+  caloriesBurned?: number; // Calories burned
+  sleepHours?: number; // Hours of sleep
+  mood?: number; // Mood rating (1-10 scale)
 }
 
 export interface DailyNeeds {
@@ -105,6 +105,23 @@ export interface MealPlanItemUpdateResponse {
     quantity: number;
     calories: number;
   };
+}
+
+// API Response Types
+export interface ProgressMetricsResponse {
+  message: string;
+}
+
+export interface ActivityCompletionResponse {
+  message: string;
+}
+
+export interface ApiErrorResponse {
+  type?: string;
+  title?: string;
+  status: number;
+  errors?: Record<string, string[]>;
+  message?: string;
 }
 
 // Helper functions for progress calculations

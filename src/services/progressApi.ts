@@ -57,6 +57,12 @@ class ProgressApiService {
         if (errorData && typeof errorData === 'object') {
           if ('message' in errorData && typeof errorData.message === 'string') {
             errorMessage = errorData.message;
+          } else if ('errors' in errorData && typeof errorData.errors === 'object') {
+            // Handle validation errors from API
+            const validationErrors = Object.entries(errorData.errors)
+              .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+              .join('; ');
+            errorMessage = validationErrors || errorMessage;
           } else if ('errors' in errorData && Array.isArray(errorData.errors)) {
             errorMessage = errorData.errors.join(', ');
           }
@@ -96,17 +102,17 @@ class ProgressApiService {
     });
   }
 
-  async updateProgressMetrics(metrics: ProgressMetrics): Promise<ProgressMetrics> {
+  async updateProgressMetrics(metrics: ProgressMetrics): Promise<{ message: string }> {
     console.log('Updating progress metrics:', metrics);
-    return this.makeRequest<ProgressMetrics>('/Nutrition/progress-metrics', {
+    return this.makeRequest<{ message: string }>('/Nutrition/progress-metrics', {
       method: 'POST',
       body: JSON.stringify(metrics),
     });
   }
 
-  async markActivityCompleted(activityId: number): Promise<void> {
+  async markActivityCompleted(activityId: number): Promise<{ message: string }> {
     console.log('Marking activity as completed:', activityId);
-    return this.makeRequest<void>(`/Nutrition/activities/${activityId}/complete`, {
+    return this.makeRequest<{ message: string }>(`/Nutrition/activities/${activityId}/complete`, {
       method: 'PUT',
     });
   }

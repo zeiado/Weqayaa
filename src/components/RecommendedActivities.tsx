@@ -14,6 +14,7 @@ import {
   Award
 } from 'lucide-react';
 import { RecommendedActivity, getActivityTypeIcon, getPriorityColor } from '@/types/progress';
+import { progressApi } from '@/services/progressApi';
 import { useToast } from '@/hooks/use-toast';
 
 interface RecommendedActivitiesProps {
@@ -33,12 +34,17 @@ export const RecommendedActivities: React.FC<RecommendedActivitiesProps> = ({
   const handleActivityToggle = async (activityId: number, isCompleted: boolean) => {
     try {
       if (isCompleted) {
+        // Call the API to mark activity as completed
+        const response = await progressApi.markActivityCompleted(activityId);
+        
         setCompletedActivities(prev => [...prev, activityId]);
         toast({
           title: "تم إكمال النشاط! 🎉",
-          description: "ممتاز! استمر في التقدم نحو أهدافك الصحية",
+          description: response.message || "ممتاز! استمر في التقدم نحو أهدافك الصحية",
         });
       } else {
+        // For now, we'll just update local state
+        // In a full implementation, you might want to add an "uncomplete" API endpoint
         setCompletedActivities(prev => prev.filter(id => id !== activityId));
         toast({
           title: "تم إلغاء إكمال النشاط",
@@ -49,11 +55,28 @@ export const RecommendedActivities: React.FC<RecommendedActivitiesProps> = ({
       if (onActivityComplete) {
         onActivityComplete(activityId);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating activity:', error);
+      
+      // Handle different types of errors
+      let errorTitle = "خطأ في تحديث النشاط";
+      let errorDescription = "حدث خطأ أثناء تحديث النشاط";
+      
+      if (error.message) {
+        if (error.message.includes('404')) {
+          errorTitle = "النشاط غير موجود";
+          errorDescription = "النشاط المحدد غير موجود أو لا ينتمي إليك";
+        } else if (error.message.includes('500')) {
+          errorTitle = "خطأ في الخادم";
+          errorDescription = "حدث خطأ في الخادم. يرجى المحاولة لاحقاً";
+        } else {
+          errorDescription = error.message;
+        }
+      }
+      
       toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء تحديث النشاط",
+        title: errorTitle,
+        description: errorDescription,
         variant: "destructive",
       });
     }
