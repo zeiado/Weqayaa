@@ -112,11 +112,11 @@ export const ConversationList = ({ onBack, onSelectConversation, selectedConvers
   };
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-900/50 dark:to-gray-800/50">
+    <div className="h-full flex flex-col bg-gradient-wellness">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
+      <div className="p-4 sm:p-6 border-b border-border bg-background/80 backdrop-blur-sm">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               variant="ghost"
               size="sm"
@@ -124,18 +124,19 @@ export const ConversationList = ({ onBack, onSelectConversation, selectedConvers
               className="flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              العودة
+              <span className="hidden sm:inline">العودة</span>
             </Button>
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-primary rounded-full flex items-center justify-center">
+              <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <h2 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400 bg-clip-text text-transparent">المحادثات</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-foreground">المحادثات</h2>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Button size="sm" className="bg-gradient-primary hover:shadow-lg transition-all duration-300">
                 <Plus className="w-4 h-4 ml-2" />
-                محادثة جديدة
+                <span className="hidden sm:inline">محادثة جديدة</span>
+                <span className="sm:hidden">جديدة</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -201,19 +202,19 @@ export const ConversationList = ({ onBack, onSelectConversation, selectedConvers
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="البحث في المحادثات..."
-            className="text-right pr-12 py-3 bg-white/80 backdrop-blur-sm border-gray-200 focus:border-blue-400 focus:ring-blue-400/20 rounded-xl"
+            className="text-right pr-10 sm:pr-12 py-2 sm:py-3 bg-background/80 backdrop-blur-sm border-border focus:border-primary focus:ring-primary/20 rounded-xl text-foreground"
           />
         </div>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <Alert className="m-4" variant="destructive">
+        <Alert className="m-3 sm:m-4" variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-right">
             {error}
@@ -232,20 +233,20 @@ export const ConversationList = ({ onBack, onSelectConversation, selectedConvers
       {/* Conversations List */}
       <ScrollArea className="flex-1">
         {loading ? (
-          <div className="flex items-center justify-center p-8">
-            <Loader2 className="w-6 h-6 animate-spin" />
-            <span className="mr-2">جاري التحميل...</span>
+          <div className="flex items-center justify-center p-6 sm:p-8">
+            <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-primary" />
+            <span className="mr-2 text-muted-foreground">جاري التحميل...</span>
           </div>
         ) : filteredConversations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-8 text-center">
-            <MessageSquare className="w-12 h-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">
+          <div className="flex flex-col items-center justify-center p-6 sm:p-8 text-center">
+            <MessageSquare className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground mb-3 sm:mb-4" />
+            <p className="text-muted-foreground text-sm sm:text-base">
               {searchTerm ? "لا توجد محادثات تطابق البحث" : "لا توجد محادثات بعد"}
             </p>
             {!searchTerm && (
               <Button
                 variant="outline"
-                className="mt-4"
+                className="mt-3 sm:mt-4"
                 onClick={() => setIsCreateDialogOpen(true)}
               >
                 <Plus className="w-4 h-4 ml-2" />
@@ -254,31 +255,31 @@ export const ConversationList = ({ onBack, onSelectConversation, selectedConvers
             )}
           </div>
         ) : (
-          <div className="p-4 space-y-3">
+          <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
             {filteredConversations.map((conversation, index) => (
               <Card
                 key={conversation.id}
-                className={`group cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.02] bg-white/80 backdrop-blur-sm border-0 shadow-lg overflow-hidden animate-fade-in ${
-                  selectedConversationId === conversation.id ? 'ring-2 ring-blue-500 shadow-blue-500/20' : ''
+                className={`group cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.01] bg-background/80 backdrop-blur-sm border border-border shadow-lg overflow-hidden animate-fade-in ${
+                  selectedConversationId === conversation.id ? 'ring-2 ring-primary shadow-primary/20' : ''
                 }`}
                 style={{ animationDelay: `${index * 100}ms` }}
                 onClick={() => onSelectConversation(conversation.id)}
               >
-                <div className="p-4">
-                  <div className="flex items-start justify-between">
+                <div className="p-3 sm:p-4">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-base truncate text-right text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                        <h3 className="font-semibold text-sm sm:text-base truncate text-right text-foreground group-hover:text-primary transition-colors duration-300">
                           {conversation.title}
                         </h3>
-                        <Badge variant="secondary" className="text-xs bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 text-blue-700 dark:text-blue-300 border-0">
+                        <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
                           {getChatTypeLabel(conversation.type)}
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 text-right truncate mb-3 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-muted-foreground text-right truncate mb-2 sm:mb-3 leading-relaxed">
                         {conversation.lastMessage}
                       </p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-3 sm:gap-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {formatDate(conversation.lastMessageTime)}
@@ -292,10 +293,10 @@ export const ConversationList = ({ onBack, onSelectConversation, selectedConvers
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100"
+                      className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 shrink-0"
                       onClick={(e) => handleDeleteConversation(conversation.id, e)}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                   </div>
                 </div>

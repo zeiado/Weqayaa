@@ -29,7 +29,15 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
     lastName: "",
     confirmPassword: ""
   });
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const isStrongPassword = (password: string) => {
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+    return hasUppercase && hasNumber && hasSpecial;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +74,17 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
         }
       } else {
         // Handle Register
+        if (!isStrongPassword(formData.password)) {
+          const message = "كلمة المرور يجب أن تحتوي على حرف كبير ورقم ورمز خاص";
+          setPasswordError(message);
+          toast({
+            title: "تحقق من كلمة المرور",
+            description: message,
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
         if (formData.password !== formData.confirmPassword) {
           throw new Error('كلمات المرور غير متطابقة');
         }
@@ -239,6 +258,14 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
               </div>
+              {!isLogin && (
+                <div className="mt-2 text-xs text-muted-foreground text-right">
+                  يجب أن تحتوي كلمة المرور على: حرف كبير واحد على الأقل، رقم واحد على الأقل، ورمز خاص واحد على الأقل.
+                  {passwordError && (
+                    <div className="text-red-500 mt-1">{passwordError}</div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Confirm Password (Sign Up Only) */}

@@ -70,12 +70,15 @@ export const Header = ({
           
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {onLogin ? (
-              // Not authenticated - show login/register buttons
-              <NavigationMenu 
-                onNavigate={onNavigate || (() => {})}
-                onLogin={onLogin}
-                onRegister={onRegister}
-              />
+              // Not authenticated - show login/register + theme toggle
+              <div className="flex items-center gap-1">
+                <NavigationMenu 
+                  onNavigate={onNavigate || (() => {})}
+                  onLogin={onLogin}
+                  onRegister={onRegister}
+                />
+                <ThemeToggle />
+              </div>
             ) : (
               // Authenticated users
               <>

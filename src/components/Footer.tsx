@@ -3,6 +3,9 @@ import { WeqayaLogo } from "./WeqayaLogo";
 import { Button } from "@/components/ui/button";
 import { Heart, Shield, Users, Mail, Phone, MapPin, Code, MessageCircle, Linkedin } from "lucide-react";
 import { authApi } from "@/services/authApi";
+import britishImg from "@/assets/British-Council-Egypt-Egypt-46149-1568211691-og.jpg";
+import educalityImg from "@/assets/Educality.jpg";
+import gizImg from "@/assets/GIZ-logo.jpg";
 
 // WhatsApp Icon Component
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -34,6 +37,38 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
   return (
     <footer className="bg-gradient-wellness border-t border-border mt-16 relative z-50">
       <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        {/* Sponsors Row */}
+        <div className="mb-8 sm:mb-12">
+          <div className="text-center mb-6 sm:mb-8">
+            <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">شركاؤنا الرعاة</h3>
+            <p className="text-sm text-muted-foreground">نشكر شركاءنا على دعمهم لرحلة الصحة الغذائية</p>
+          </div>
+          <div className="bg-white/5 dark:bg-gray-800/20 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/10">
+            <div className="flex items-center justify-center gap-8 sm:gap-12 lg:gap-16 flex-wrap">
+              <div className="group h-16 sm:h-20 md:h-24 flex items-center justify-center p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <img 
+                  src={britishImg} 
+                  alt="British Council" 
+                  className="h-full w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
+                />
+              </div>
+              <div className="group h-16 sm:h-20 md:h-24 flex items-center justify-center p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <img 
+                  src={educalityImg} 
+                  alt="Educality" 
+                  className="h-full w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
+                />
+              </div>
+              <div className="group h-16 sm:h-20 md:h-24 flex items-center justify-center p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <img 
+                  src={gizImg} 
+                  alt="GIZ" 
+                  className="h-full w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
+                />
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8">
           {/* Brand Section */}
           <div className="sm:col-span-2 md:col-span-1 text-center sm:text-right">
@@ -106,11 +141,11 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
             <ul className="space-y-2">
               <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4" />
-                info@weqaya.com
+                weqayaa@gmail.com
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <Phone className="w-4 h-4" />
-                +20 1278747645
+                +20 10 03173576
               </li>
               <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4" />

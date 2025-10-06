@@ -1,6 +1,6 @@
 import { useState, useEffect, Suspense, lazy } from "react";
-import { HeroSection } from "@/components/HeroSection";
 import { OnboardingFlow } from "@/components/OnboardingFlow";
+import { HeroSection } from "@/components/HeroSection";
 import { Auth } from "@/components/Auth";
 import { authApi } from "@/services/authApi";
 
