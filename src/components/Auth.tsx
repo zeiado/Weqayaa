@@ -30,6 +30,7 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
     confirmPassword: ""
   });
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
   const { toast } = useToast();
 
   const isStrongPassword = (password: string) => {
@@ -39,8 +40,114 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
     return hasUppercase && hasNumber && hasSpecial;
   };
 
+  const validateEmail = (email: string): string | null => {
+    if (!email.trim()) {
+      return "البريد الإلكتروني مطلوب";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "يرجى إدخال بريد إلكتروني صحيح";
+    }
+    return null;
+  };
+
+  const validatePassword = (password: string): string | null => {
+    if (!password) {
+      return "كلمة المرور مطلوبة";
+    }
+    if (password.length < 8) {
+      return "كلمة المرور يجب أن تكون 8 أحرف على الأقل";
+    }
+    if (!isStrongPassword(password)) {
+      return "كلمة المرور يجب أن تحتوي على حرف كبير ورقم ورمز خاص";
+    }
+    return null;
+  };
+
+  const validateName = (name: string, fieldName: string): string | null => {
+    if (!name.trim()) {
+      return `${fieldName} مطلوب`;
+    }
+    if (name.trim().length < 2) {
+      return `${fieldName} يجب أن يكون حرفين على الأقل`;
+    }
+    if (!/^[a-zA-Z\u0600-\u06FF\s]+$/.test(name.trim())) {
+      return `${fieldName} يجب أن يحتوي على أحرف فقط`;
+    }
+    return null;
+  };
+
+  const validateForm = (): boolean => {
+    const errors: {[key: string]: string} = {};
+    
+    // Validate email
+    const emailError = validateEmail(formData.email);
+    if (emailError) errors.email = emailError;
+    
+    // Validate password
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) errors.password = passwordError;
+    
+    // Validate names for registration
+    if (!isLogin) {
+      const firstNameError = validateName(formData.firstName, "الاسم الأول");
+      if (firstNameError) errors.firstName = firstNameError;
+      
+      const lastNameError = validateName(formData.lastName, "الاسم الأخير");
+      if (lastNameError) errors.lastName = lastNameError;
+      
+      // Validate confirm password
+      if (formData.password !== formData.confirmPassword) {
+        errors.confirmPassword = "كلمات المرور غير متطابقة";
+      }
+    }
+    
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const getUserFriendlyError = (error: string): string => {
+    // Map common API errors to user-friendly messages
+    const errorMappings: {[key: string]: string} = {
+      'User already exists': 'هذا البريد الإلكتروني مسجل بالفعل',
+      'Invalid email': 'البريد الإلكتروني غير صحيح',
+      'Invalid credentials': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+      'Email already exists': 'هذا البريد الإلكتروني مسجل بالفعل',
+      'Password too weak': 'كلمة المرور ضعيفة جداً',
+      'User not found': 'المستخدم غير موجود',
+      'Account locked': 'الحساب مقفل، يرجى المحاولة لاحقاً',
+      'Network error': 'خطأ في الاتصال، تحقق من الإنترنت',
+      'Server error': 'خطأ في الخادم، يرجى المحاولة لاحقاً'
+    };
+    
+    // Check for partial matches
+    for (const [key, value] of Object.entries(errorMappings)) {
+      if (error.toLowerCase().includes(key.toLowerCase())) {
+        return value;
+      }
+    }
+    
+    // Default user-friendly message
+    return "حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Clear previous errors
+    setFieldErrors({});
+    setPasswordError(null);
+    
+    // Validate form before submission
+    if (!validateForm()) {
+      toast({
+        title: "يرجى تصحيح الأخطاء",
+        description: "تحقق من البيانات المدخلة وحاول مرة أخرى",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
@@ -70,25 +177,11 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
 
           onLogin();
         } else {
-          throw new Error(response.errors?.join(', ') || 'فشل في تسجيل الدخول');
+          const errorMessage = response.errors?.join(', ') || 'فشل في تسجيل الدخول';
+          throw new Error(errorMessage);
         }
       } else {
         // Handle Register
-        if (!isStrongPassword(formData.password)) {
-          const message = "كلمة المرور يجب أن تحتوي على حرف كبير ورقم ورمز خاص";
-          setPasswordError(message);
-          toast({
-            title: "تحقق من كلمة المرور",
-            description: message,
-            variant: "destructive",
-          });
-          setIsLoading(false);
-          return;
-        }
-        if (formData.password !== formData.confirmPassword) {
-          throw new Error('كلمات المرور غير متطابقة');
-        }
-
         const registerData: RegisterRequest = {
           email: formData.email,
           password: formData.password,
@@ -121,14 +214,18 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
             onLogin();
           }
         } else {
-          throw new Error(response.errors?.join(', ') || 'فشل في إنشاء الحساب');
+          const errorMessage = response.errors?.join(', ') || 'فشل في إنشاء الحساب';
+          throw new Error(errorMessage);
         }
       }
     } catch (error) {
       console.error('Authentication error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'حدث خطأ غير متوقع';
+      const userFriendlyMessage = getUserFriendlyError(errorMessage);
+      
       toast({
-        title: "خطأ في المصادقة",
-        description: error instanceof Error ? error.message : 'حدث خطأ غير متوقع',
+        title: isLogin ? "فشل في تسجيل الدخول" : "فشل في إنشاء الحساب",
+        description: userFriendlyMessage,
         variant: "destructive",
       });
     } finally {
@@ -184,13 +281,22 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
                     type="text"
                     placeholder="أدخل اسمك الأول"
                     value={formData.firstName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                    className="text-right pr-10"
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, firstName: e.target.value }));
+                      // Clear error when user starts typing
+                      if (fieldErrors.firstName) {
+                        setFieldErrors(prev => ({ ...prev, firstName: '' }));
+                      }
+                    }}
+                    className={`text-right pr-10 ${fieldErrors.firstName ? 'border-red-500 focus:border-red-500' : ''}`}
                     required={!isLogin}
                     disabled={isLoading}
                   />
                   <User className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 </div>
+                {fieldErrors.firstName && (
+                  <p className="text-red-500 text-xs mt-1 text-right">{fieldErrors.firstName}</p>
+                )}
               </div>
             )}
 
@@ -204,13 +310,22 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
                     type="text"
                     placeholder="أدخل اسمك الأخير"
                     value={formData.lastName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                    className="text-right pr-10"
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, lastName: e.target.value }));
+                      // Clear error when user starts typing
+                      if (fieldErrors.lastName) {
+                        setFieldErrors(prev => ({ ...prev, lastName: '' }));
+                      }
+                    }}
+                    className={`text-right pr-10 ${fieldErrors.lastName ? 'border-red-500 focus:border-red-500' : ''}`}
                     required={!isLogin}
                     disabled={isLoading}
                   />
                   <User className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 </div>
+                {fieldErrors.lastName && (
+                  <p className="text-red-500 text-xs mt-1 text-right">{fieldErrors.lastName}</p>
+                )}
               </div>
             )}
 
@@ -223,13 +338,22 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
                   type="email"
                   placeholder="أدخل بريدك الإلكتروني"
                   value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="text-right pr-10"
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, email: e.target.value }));
+                    // Clear error when user starts typing
+                    if (fieldErrors.email) {
+                      setFieldErrors(prev => ({ ...prev, email: '' }));
+                    }
+                  }}
+                  className={`text-right pr-10 ${fieldErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
                   required
                   disabled={isLoading}
                 />
                 <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               </div>
+              {fieldErrors.email && (
+                <p className="text-red-500 text-xs mt-1 text-right">{fieldErrors.email}</p>
+              )}
             </div>
 
             {/* Password Field */}
@@ -241,8 +365,14 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
                   type={showPassword ? "text" : "password"}
                   placeholder="أدخل كلمة المرور"
                   value={formData.password}
-                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                  className="text-right pr-10 pl-10"
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, password: e.target.value }));
+                    // Clear error when user starts typing
+                    if (fieldErrors.password) {
+                      setFieldErrors(prev => ({ ...prev, password: '' }));
+                    }
+                  }}
+                  className={`text-right pr-10 pl-10 ${fieldErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
                   required
                   disabled={isLoading}
                 />
@@ -258,12 +388,12 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
               </div>
+              {fieldErrors.password && (
+                <p className="text-red-500 text-xs mt-1 text-right">{fieldErrors.password}</p>
+              )}
               {!isLogin && (
                 <div className="mt-2 text-xs text-muted-foreground text-right">
                   يجب أن تحتوي كلمة المرور على: حرف كبير واحد على الأقل، رقم واحد على الأقل، ورمز خاص واحد على الأقل.
-                  {passwordError && (
-                    <div className="text-red-500 mt-1">{passwordError}</div>
-                  )}
                 </div>
               )}
             </div>
@@ -278,8 +408,14 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="أعد إدخال كلمة المرور"
                     value={formData.confirmPassword}
-                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="text-right pr-10 pl-10"
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, confirmPassword: e.target.value }));
+                      // Clear error when user starts typing
+                      if (fieldErrors.confirmPassword) {
+                        setFieldErrors(prev => ({ ...prev, confirmPassword: '' }));
+                      }
+                    }}
+                    className={`text-right pr-10 pl-10 ${fieldErrors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''}`}
                     required={!isLogin}
                     disabled={isLoading}
                   />
@@ -295,6 +431,9 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                 </div>
+                {fieldErrors.confirmPassword && (
+                  <p className="text-red-500 text-xs mt-1 text-right">{fieldErrors.confirmPassword}</p>
+                )}
               </div>
             )}
 

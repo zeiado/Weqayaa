@@ -2,7 +2,9 @@ import { useState, useEffect, Suspense, lazy } from "react";
 import { OnboardingFlow } from "@/components/OnboardingFlow";
 import { HeroSection } from "@/components/HeroSection";
 import { Auth } from "@/components/Auth";
+import { ProfileCompletionModal } from "@/components/ProfileCompletionModal";
 import { authApi } from "@/services/authApi";
+import { useProfileCompletion } from "@/hooks/useProfileCompletion";
 
 // Lazy load heavy components
 const Dashboard = lazy(() => import("@/components/Dashboard").then(module => ({ default: module.Dashboard })));
@@ -53,6 +55,16 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  
+  // Profile completion hook
+  const { 
+    isProfileComplete, 
+    needsProfileCompletion, 
+    isLoading: isProfileLoading, 
+    error: profileError,
+    refreshProfile 
+  } = useProfileCompletion();
 
   useEffect(() => {
     // Check if user is already authenticated
@@ -60,6 +72,15 @@ const Index = () => {
       setCurrentState("dashboard");
     }
   }, []);
+
+  // Check profile completion when user is authenticated and on dashboard
+  useEffect(() => {
+    if (authApi.isTokenValid() && currentState === "dashboard" && !isProfileLoading) {
+      if (needsProfileCompletion) {
+        setShowProfileModal(true);
+      }
+    }
+  }, [currentState, isProfileLoading, needsProfileCompletion]);
 
   const handleOnboardingComplete = (data: UserData) => {
     setUserData(data);
@@ -77,6 +98,14 @@ const Index = () => {
   };
 
   const handleNavigation = (section: string) => {
+    // Check if user needs to complete profile for certain sections
+    const profileRequiredSections = ["chat", "progress", "mealplan"];
+    
+    if (profileRequiredSections.includes(section) && needsProfileCompletion) {
+      setShowProfileModal(true);
+      return;
+    }
+
     switch (section) {
       case "dashboard":
         setCurrentState("dashboard");
@@ -172,6 +201,20 @@ const Index = () => {
     setCurrentState("landing");
   };
 
+  const handleCompleteProfile = () => {
+    setShowProfileModal(false);
+    setCurrentState("onboarding");
+  };
+
+  const handleSkipProfile = () => {
+    setShowProfileModal(false);
+    // User can continue with limited functionality
+  };
+
+  const handleCloseProfileModal = () => {
+    setShowProfileModal(false);
+  };
+
   const renderCurrentState = () => {
     switch (currentState) {
       case "auth":
@@ -215,9 +258,22 @@ const Index = () => {
   };
 
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      {renderCurrentState()}
-    </Suspense>
+    <>
+      <Suspense fallback={<LoadingSpinner />}>
+        {renderCurrentState()}
+      </Suspense>
+      
+      {/* Profile Completion Modal */}
+      <ProfileCompletionModal
+        isOpen={showProfileModal}
+        onClose={handleCloseProfileModal}
+        onCompleteProfile={handleCompleteProfile}
+        onSkip={handleSkipProfile}
+        isLoading={isProfileLoading}
+        error={profileError}
+        showSkipOption={true}
+      />
+    </>
   );
 };
 
