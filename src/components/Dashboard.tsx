@@ -138,7 +138,9 @@ export const Dashboard = ({
   onOpenCafeteria,
   onOpenProfile,
   onOpenMealPlan,
-  onOpenProgressReport
+  onOpenProgressReport,
+  onNavigate,
+  onRegister
 }: { 
   userName?: string;
   onBack: () => void;
@@ -147,6 +149,8 @@ export const Dashboard = ({
   onOpenProfile?: () => void;
   onOpenMealPlan?: () => void;
   onOpenProgressReport?: () => void;
+  onNavigate?: (section: string) => void;
+  onRegister?: () => void;
 }) => {
   const [userData, setUserData] = useState<{
     firstName: string;
@@ -339,6 +343,8 @@ export const Dashboard = ({
         title={`أهلاً ${displayName}`}
         onOpenChat={onOpenChat}
         onOpenProfile={onOpenProfile}
+        onNavigate={onNavigate}
+        onRegister={onRegister}
       />
 
       <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 relative z-10">
@@ -599,7 +605,7 @@ export const Dashboard = ({
         </div>
       </div>
       
-      <Footer />
+      <Footer onNavigate={onNavigate} onRegister={onRegister} />
       
       {/* Premium Upgrade Modal */}
       <PremiumUpgradeModal 

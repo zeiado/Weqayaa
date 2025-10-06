@@ -2,6 +2,7 @@ import React from "react";
 import { WeqayaLogo } from "./WeqayaLogo";
 import { Button } from "@/components/ui/button";
 import { Heart, Shield, Users, Mail, Phone, MapPin, Code, MessageCircle, Linkedin } from "lucide-react";
+import { authApi } from "@/services/authApi";
 
 // WhatsApp Icon Component
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -15,7 +16,21 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const Footer = () => {
+interface FooterProps {
+  onNavigate?: (section: string) => void;
+  onRegister?: () => void;
+}
+
+export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
+  const isAuthenticated = authApi.isTokenValid();
+
+  const handleQuickLinkClick = (section: string) => {
+    if (!isAuthenticated && onRegister) {
+      onRegister();
+    } else if (onNavigate) {
+      onNavigate(section);
+    }
+  };
   return (
     <footer className="bg-gradient-wellness border-t border-border mt-16 relative z-50">
       <div className="container mx-auto px-6 py-12">
@@ -37,17 +52,29 @@ export const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">روابط سريعة</h3>
             <ul className="space-y-2">
               <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-muted-foreground hover:text-primary"
+                  onClick={() => handleQuickLinkClick('dashboard')}
+                >
                   الرئيسية
                 </Button>
               </li>
               <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-muted-foreground hover:text-primary"
+                  onClick={() => handleQuickLinkClick('chat')}
+                >
                   المستشار الذكي
                 </Button>
               </li>
               <li>
-                <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-primary">
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-muted-foreground hover:text-primary"
+                  onClick={() => handleQuickLinkClick('profile')}
+                >
                   ملفي الشخصي
                 </Button>
               </li>

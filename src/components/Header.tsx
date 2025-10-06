@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { WeqayaLogo } from "./WeqayaLogo";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationsDropdown } from "./NotificationsDropdown";
+import { NavigationMenu } from "./NavigationMenu";
 import { Bell, MessageCircle, User, Settings, LogOut } from "lucide-react";
 import { authApi } from "@/services/authApi";
 
@@ -14,6 +15,8 @@ interface HeaderProps {
   onOpenProfile?: () => void;
   onLogout?: () => void;
   onLogin?: () => void;
+  onRegister?: () => void;
+  onNavigate?: (section: string) => void;
 }
 
 export const Header = ({ 
@@ -23,7 +26,9 @@ export const Header = ({
   onOpenChat,
   onOpenProfile,
   onLogout,
-  onLogin
+  onLogin,
+  onRegister,
+  onNavigate
 }: HeaderProps) => {
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -66,15 +71,11 @@ export const Header = ({
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             <ThemeToggle />
             {onLogin ? (
-              <Button 
-                variant="outline" 
-                className="text-primary border-primary/30 hover:bg-primary/10 text-sm px-3 sm:px-4"
-                onClick={onLogin}
-                size="sm"
-              >
-                <span className="hidden sm:inline">تسجيل الدخول</span>
-                <span className="sm:hidden">دخول</span>
-              </Button>
+              <NavigationMenu 
+                onNavigate={onNavigate || (() => {})}
+                onLogin={onLogin}
+                onRegister={onRegister}
+              />
             ) : (
               <>
                 {/* Mobile: Show only essential buttons */}

@@ -10,10 +10,12 @@ import weqayaHero from "@/assets/weqaya-hero.jpg";
 
 export const HeroSection = ({ 
   onStartRegistration, 
-  onLogin 
+  onLogin,
+  onNavigate
 }: { 
   onStartRegistration?: () => void;
   onLogin?: () => void;
+  onNavigate?: (section: string) => void;
 }) => {
   return (
     <div className="bg-gradient-wellness relative overflow-hidden">
@@ -26,6 +28,8 @@ export const HeroSection = ({
 
       <Header 
         onLogin={onLogin}
+        onRegister={onStartRegistration}
+        onNavigate={onNavigate}
         showBackButton={false}
       />
       
@@ -245,7 +249,7 @@ export const HeroSection = ({
       
       {/* Add some spacing before footer */}
       <div className="mt-16"></div>
-      <Footer />
+      <Footer onNavigate={onNavigate} onRegister={onStartRegistration} />
     </div>
   );
 };

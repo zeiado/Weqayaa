@@ -76,6 +76,32 @@ const Index = () => {
     setCurrentState("auth");
   };
 
+  const handleNavigation = (section: string) => {
+    switch (section) {
+      case "dashboard":
+        setCurrentState("dashboard");
+        break;
+      case "chat":
+        setCurrentState("chat");
+        break;
+      case "cafeteria":
+        setIsMealPlanMode(false);
+        setCurrentState("cafeteria");
+        break;
+      case "mealplan":
+        setCurrentState("mealplan");
+        break;
+      case "progress":
+        setCurrentState("progress");
+        break;
+      case "profile":
+        setCurrentState("profile");
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleLogin = () => {
     setCurrentState("dashboard");
   };
@@ -166,6 +192,8 @@ const Index = () => {
           onOpenProfile={showProfile}
           onOpenMealPlan={showMealPlan}
           onOpenProgressReport={showProgressReport}
+          onNavigate={handleNavigation}
+          onRegister={startRegistration}
         />;
       case "chat":
         return <ChatInterface onBack={backToDashboard} />;
@@ -182,7 +210,7 @@ const Index = () => {
       case "payment-success":
         return <PaymentSuccess onBack={backToDashboard} onNewOrder={showNewOrder} orderDetails={orderDetails} />;
       default:
-        return <HeroSection onStartRegistration={startRegistration} onLogin={showAuth} />;
+        return <HeroSection onStartRegistration={startRegistration} onLogin={showAuth} onNavigate={handleNavigation} />;
     }
   };
 
