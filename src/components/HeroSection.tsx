@@ -16,7 +16,7 @@ export const HeroSection = ({
   onLogin?: () => void;
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-wellness relative overflow-hidden">
+    <div className="bg-gradient-wellness relative overflow-hidden">
       {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-32 h-32 bg-primary-glow/20 rounded-full blur-3xl"></div>
@@ -243,6 +243,8 @@ export const HeroSection = ({
         </div>
       </div>
       
+      {/* Add some spacing before footer */}
+      <div className="mt-16"></div>
       <Footer />
     </div>
   );

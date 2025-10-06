@@ -185,13 +185,14 @@ export const Dashboard = ({
     const loadSummary = async () => {
       setIsLoading(true);
       setError(null);
+      setNotFound(false);
       try {
         const data = await dashboardApi.getDashboardSummary();
         setSummary(data);
       } catch (e: any) {
         if (e instanceof HttpError && e.status === 404) {
           setNotFound(true);
-          setError('لم يتم العثور على ملفك الصحي. برجاء إنشاء الملف أولاً.');
+          setError('لم يتم العثور على ملفك الصحي. قد تحتاج إلى إنشاء الملف أولاً أو المحاولة مرة أخرى.');
         } else {
           setError(e?.message || 'Failed to load dashboard');
         }
@@ -201,6 +202,25 @@ export const Dashboard = ({
     };
     loadSummary();
   }, []);
+
+  const retryLoadSummary = async () => {
+    setIsLoading(true);
+    setError(null);
+    setNotFound(false);
+    try {
+      const data = await dashboardApi.getDashboardSummary();
+      setSummary(data);
+    } catch (e: any) {
+      if (e instanceof HttpError && e.status === 404) {
+        setNotFound(true);
+        setError('لم يتم العثور على ملفك الصحي. برجاء إنشاء الملف أولاً.');
+      } else {
+        setError(e?.message || 'Failed to load dashboard');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Memoized computed values
   const displayName = useMemo(() => 
@@ -327,11 +347,16 @@ export const Dashboard = ({
         {error && !isLoading && (
           <div className="text-center text-red-600 space-y-3">
             <div>{error}</div>
-            {notFound && onOpenProfile && (
-              <Button onClick={onOpenProfile} variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
-                إنشاء/استكمال الملف الصحي
+            <div className="flex gap-2 justify-center">
+              <Button onClick={retryLoadSummary} variant="outline" size="sm" className="border-primary/30 text-primary hover:bg-primary/10">
+                إعادة المحاولة
               </Button>
-            )}
+              {notFound && onOpenProfile && (
+                <Button onClick={onOpenProfile} variant="outline" size="sm" className="border-primary/30 text-primary hover:bg-primary/10">
+                  إنشاء/استكمال الملف الصحي
+                </Button>
+              )}
+            </div>
           </div>
         )}
 

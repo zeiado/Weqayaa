@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WeqayaLogo } from "./WeqayaLogo";
 import { ThemeToggle } from "./ThemeToggle";
+import { Footer } from "./Footer";
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { authApi, LoginRequest, RegisterRequest } from "@/services/authApi";
 import { useToast } from "@/hooks/use-toast";
@@ -348,6 +349,8 @@ export const Auth = ({ onBack, onLogin, onRegister, initialMode = "login" }: Aut
           </div>
         )}
       </div>
+      
+      <Footer />
     </div>
   );
 };
