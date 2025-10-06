@@ -41,49 +41,49 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
         <div className="mb-8 sm:mb-12">
           <div className="text-center mb-6 sm:mb-8">
             <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">شركاؤنا الرعاة</h3>
-            <p className="text-sm text-muted-foreground">نشكر شركاءنا على دعمهم لرحلة الصحة الغذائية</p>
+            <p className="text-sm text-muted-foreground px-4">نشكر شركاءنا على دعمهم لرحلة الصحة الغذائية</p>
           </div>
-          <div className="bg-white/5 dark:bg-gray-800/20 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/10">
-            <div className="flex items-center justify-center gap-8 sm:gap-12 lg:gap-16 flex-wrap">
-              <div className="group h-16 sm:h-20 md:h-24 flex items-center justify-center p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="bg-white/5 dark:bg-gray-800/20 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 border border-white/10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-center justify-items-center">
+              <div className="group h-16 sm:h-20 lg:h-24 w-full max-w-[200px] flex items-center justify-center p-3 sm:p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <img 
                   src={britishImg} 
                   alt="British Council" 
-                  className="h-full w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
+                  className="h-full w-full object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
                 />
               </div>
-              <div className="group h-16 sm:h-20 md:h-24 flex items-center justify-center p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="group h-16 sm:h-20 lg:h-24 w-full max-w-[200px] flex items-center justify-center p-3 sm:p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <img 
                   src={educalityImg} 
                   alt="Educality" 
-                  className="h-full w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
+                  className="h-full w-full object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
                 />
               </div>
-              <div className="group h-16 sm:h-20 md:h-24 flex items-center justify-center p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="group h-16 sm:h-20 lg:h-24 w-full max-w-[200px] flex items-center justify-center p-3 sm:p-4 bg-white/80 dark:bg-gray-900/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                 <img 
                   src={gizImg} 
                   alt="GIZ" 
-                  className="h-full w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
+                  className="h-full w-full object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-300" 
                 />
               </div>
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8">
           {/* Brand Section */}
-          <div className="sm:col-span-2 md:col-span-1 text-center sm:text-right">
+          <div className="sm:col-span-2 lg:col-span-1 text-center lg:text-right">
             <WeqayaLogo size="lg" />
-            <p className="text-muted-foreground mt-4 text-sm leading-relaxed max-w-md mx-auto sm:mx-0">
+            <p className="text-muted-foreground mt-4 text-sm leading-relaxed max-w-md mx-auto lg:mx-0">
               وقاية - تطبيق التغذية الذكية للطلاب الجامعيين. نساعدك في اتخاذ قرارات غذائية صحية ومتوازنة.
             </p>
-            <div className="flex items-center justify-center sm:justify-start gap-2 mt-4">
+            <div className="flex items-center justify-center lg:justify-start gap-2 mt-4">
               <Heart className="w-4 h-4 text-red-500" />
               <span className="text-sm text-muted-foreground">صُنع بحب في مصر</span>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="text-center sm:text-right">
+          <div className="text-center lg:text-right">
             <h3 className="font-semibold text-foreground mb-4">روابط سريعة</h3>
             <ul className="space-y-2">
               <li>
@@ -117,92 +117,92 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
           </div>
 
           {/* Features */}
-          <div className="text-center sm:text-right">
+          <div className="text-center lg:text-right">
             <h3 className="font-semibold text-foreground mb-4">المميزات</h3>
             <ul className="space-y-2">
-              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
-                <Shield className="w-4 h-4 text-primary" />
-                توصيات غذائية مخصصة
+              <li className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground">
+                <Shield className="w-4 h-4 text-primary flex-shrink-0" />
+                <span>توصيات غذائية مخصصة</span>
               </li>
-              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
-                <Users className="w-4 h-4 text-secondary" />
-                مجتمع طلابي صحي
+              <li className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground">
+                <Users className="w-4 h-4 text-secondary flex-shrink-0" />
+                <span>مجتمع طلابي صحي</span>
               </li>
-              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
-                <Heart className="w-4 h-4 text-accent" />
-                تتبع التقدم الصحي
+              <li className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground">
+                <Heart className="w-4 h-4 text-accent flex-shrink-0" />
+                <span>تتبع التقدم الصحي</span>
               </li>
             </ul>
           </div>
 
           {/* Contact */}
-          <div className="text-center sm:text-right">
+          <div className="text-center lg:text-right">
             <h3 className="font-semibold text-foreground mb-4">تواصل معنا</h3>
             <ul className="space-y-2">
-              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
-                <Mail className="w-4 h-4" />
-                weqayaa@gmail.com
+              <li className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground">
+                <Mail className="w-4 h-4 flex-shrink-0" />
+                <span className="break-all">weqayaa@gmail.com</span>
               </li>
-              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
-                <Phone className="w-4 h-4" />
-                +20 10 03173576
+              <li className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground">
+                <Phone className="w-4 h-4 flex-shrink-0" />
+                <span>+20 10 03173576</span>
               </li>
-              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4" />
-                القاهرة، مصر
+              <li className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground">
+                <MapPin className="w-4 h-4 flex-shrink-0" />
+                <span>القاهرة، مصر</span>
               </li>
             </ul>
           </div>
 
           {/* Developers */}
-          <div className="sm:col-span-2 md:col-span-1 bg-red-100 dark:bg-red-900/20 p-4 rounded-lg border-2 border-red-300 dark:border-red-700">
-            <h3 className="font-semibold text-foreground mb-4 flex items-center justify-center sm:justify-start gap-2">
+          <div className="sm:col-span-2 lg:col-span-1 bg-red-100 dark:bg-red-900/20 p-4 rounded-lg border-2 border-red-300 dark:border-red-700">
+            <h3 className="font-semibold text-foreground mb-4 flex items-center justify-center lg:justify-start gap-2">
               <Code className="w-4 h-4" />
               المطورون
             </h3>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
               {/* Ziad Gamal */}
               <div className="bg-muted/30 rounded-lg p-3">
-                <h4 className="font-medium text-foreground text-sm mb-2">زياد جمال</h4>
+                <h4 className="font-medium text-foreground text-sm mb-2 text-center lg:text-right">زياد جمال</h4>
                 <div className="space-y-2">
                   <div 
                     onClick={() => window.open('https://wa.me/201278747645', '_blank')}
-                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 p-2 rounded-md transition-all duration-200 cursor-pointer group"
+                    className="flex items-center justify-center lg:justify-start gap-2 text-xs text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 p-2 rounded-md transition-all duration-200 cursor-pointer group"
                     title="Send WhatsApp message to Ziad"
                   >
-                    <WhatsAppIcon className="w-3 h-3 group-hover:text-green-600 transition-colors" />
-                    WhatsApp: 01278747645
+                    <WhatsAppIcon className="w-3 h-3 group-hover:text-green-600 transition-colors flex-shrink-0" />
+                    <span className="break-all">WhatsApp: 01278747645</span>
                   </div>
                   <div 
                     onClick={() => window.open('https://www.linkedin.com/in/ziad-gamal-506b99222', '_blank')}
-                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-md transition-all duration-200 cursor-pointer group"
+                    className="flex items-center justify-center lg:justify-start gap-2 text-xs text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-md transition-all duration-200 cursor-pointer group"
                     title="View Ziad's LinkedIn profile"
                   >
-                    <Linkedin className="w-3 h-3 group-hover:text-blue-600 transition-colors" />
-                    LinkedIn Profile
+                    <Linkedin className="w-3 h-3 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                    <span>LinkedIn Profile</span>
                   </div>
                 </div>
               </div>
 
               {/* Youssef Samir */}
               <div className="bg-muted/30 rounded-lg p-3">
-                <h4 className="font-medium text-foreground text-sm mb-2">يوسف سمير</h4>
+                <h4 className="font-medium text-foreground text-sm mb-2 text-center lg:text-right">يوسف سمير</h4>
                 <div className="space-y-2">
                   <div 
                     onClick={() => window.open('https://wa.me/201202203469', '_blank')}
-                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 p-2 rounded-md transition-all duration-200 cursor-pointer group"
+                    className="flex items-center justify-center lg:justify-start gap-2 text-xs text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 p-2 rounded-md transition-all duration-200 cursor-pointer group"
                     title="Send WhatsApp message to Youssef"
                   >
-                    <WhatsAppIcon className="w-3 h-3 group-hover:text-green-600 transition-colors" />
-                    WhatsApp: 01202203469
+                    <WhatsAppIcon className="w-3 h-3 group-hover:text-green-600 transition-colors flex-shrink-0" />
+                    <span className="break-all">WhatsApp: 01202203469</span>
                   </div>
                   <div 
                     onClick={() => window.open('https://www.linkedin.com/in/youssef-samir-7b688230b/', '_blank')}
-                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-md transition-all duration-200 cursor-pointer group"
+                    className="flex items-center justify-center lg:justify-start gap-2 text-xs text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-md transition-all duration-200 cursor-pointer group"
                     title="View Youssef's LinkedIn profile"
                   >
-                    <Linkedin className="w-3 h-3 group-hover:text-blue-600 transition-colors" />
-                    LinkedIn Profile
+                    <Linkedin className="w-3 h-3 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                    <span>LinkedIn Profile</span>
                   </div>
                 </div>
               </div>
@@ -211,11 +211,11 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-border mt-6 sm:mt-8 pt-6 sm:pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground text-center md:text-right">
+        <div className="border-t border-border mt-6 sm:mt-8 pt-6 sm:pt-8 flex flex-col lg:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-muted-foreground text-center lg:text-right order-2 lg:order-1">
             © 2025 وقاية. جميع الحقوق محفوظة.
           </p>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 order-1 lg:order-2">
             <Button variant="link" className="p-0 h-auto text-sm text-muted-foreground hover:text-primary">
               الشروط والأحكام
             </Button>
