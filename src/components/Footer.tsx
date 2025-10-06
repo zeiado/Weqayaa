@@ -33,28 +33,28 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
   };
   return (
     <footer className="bg-gradient-wellness border-t border-border mt-16 relative z-50">
-      <div className="container mx-auto px-6 py-12">
-        <div className="grid md:grid-cols-5 gap-8">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8">
           {/* Brand Section */}
-          <div className="md:col-span-1">
+          <div className="sm:col-span-2 md:col-span-1 text-center sm:text-right">
             <WeqayaLogo size="lg" />
-            <p className="text-muted-foreground mt-4 text-sm leading-relaxed">
+            <p className="text-muted-foreground mt-4 text-sm leading-relaxed max-w-md mx-auto sm:mx-0">
               وقاية - تطبيق التغذية الذكية للطلاب الجامعيين. نساعدك في اتخاذ قرارات غذائية صحية ومتوازنة.
             </p>
-            <div className="flex items-center gap-2 mt-4">
+            <div className="flex items-center justify-center sm:justify-start gap-2 mt-4">
               <Heart className="w-4 h-4 text-red-500" />
               <span className="text-sm text-muted-foreground">صُنع بحب في مصر</span>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="text-center sm:text-right">
             <h3 className="font-semibold text-foreground mb-4">روابط سريعة</h3>
             <ul className="space-y-2">
               <li>
                 <Button 
                   variant="link" 
-                  className="p-0 h-auto text-muted-foreground hover:text-primary"
+                  className="p-0 h-auto text-muted-foreground hover:text-primary text-sm"
                   onClick={() => handleQuickLinkClick('dashboard')}
                 >
                   الرئيسية
@@ -63,7 +63,7 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
               <li>
                 <Button 
                   variant="link" 
-                  className="p-0 h-auto text-muted-foreground hover:text-primary"
+                  className="p-0 h-auto text-muted-foreground hover:text-primary text-sm"
                   onClick={() => handleQuickLinkClick('chat')}
                 >
                   المستشار الذكي
@@ -72,7 +72,7 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
               <li>
                 <Button 
                   variant="link" 
-                  className="p-0 h-auto text-muted-foreground hover:text-primary"
+                  className="p-0 h-auto text-muted-foreground hover:text-primary text-sm"
                   onClick={() => handleQuickLinkClick('profile')}
                 >
                   ملفي الشخصي
@@ -82,18 +82,18 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
           </div>
 
           {/* Features */}
-          <div>
+          <div className="text-center sm:text-right">
             <h3 className="font-semibold text-foreground mb-4">المميزات</h3>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-sm text-muted-foreground">
+              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <Shield className="w-4 h-4 text-primary" />
                 توصيات غذائية مخصصة
               </li>
-              <li className="flex items-center gap-2 text-sm text-muted-foreground">
+              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <Users className="w-4 h-4 text-secondary" />
                 مجتمع طلابي صحي
               </li>
-              <li className="flex items-center gap-2 text-sm text-muted-foreground">
+              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <Heart className="w-4 h-4 text-accent" />
                 تتبع التقدم الصحي
               </li>
@@ -101,18 +101,18 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="text-center sm:text-right">
             <h3 className="font-semibold text-foreground mb-4">تواصل معنا</h3>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-sm text-muted-foreground">
+              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4" />
                 info@weqaya.com
               </li>
-              <li className="flex items-center gap-2 text-sm text-muted-foreground">
+              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <Phone className="w-4 h-4" />
                 +20 1278747645
               </li>
-              <li className="flex items-center gap-2 text-sm text-muted-foreground">
+              <li className="flex items-center justify-center sm:justify-start gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4" />
                 القاهرة، مصر
               </li>
@@ -120,8 +120,8 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
           </div>
 
           {/* Developers */}
-          <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-lg border-2 border-red-300 dark:border-red-700">
-            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+          <div className="sm:col-span-2 md:col-span-1 bg-red-100 dark:bg-red-900/20 p-4 rounded-lg border-2 border-red-300 dark:border-red-700">
+            <h3 className="font-semibold text-foreground mb-4 flex items-center justify-center sm:justify-start gap-2">
               <Code className="w-4 h-4" />
               المطورون
             </h3>
@@ -176,11 +176,11 @@ export const Footer = ({ onNavigate, onRegister }: FooterProps) => {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">
+        <div className="border-t border-border mt-6 sm:mt-8 pt-6 sm:pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-muted-foreground text-center md:text-right">
             © 2025 وقاية. جميع الحقوق محفوظة.
           </p>
-          <div className="flex gap-4 mt-4 md:mt-0">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <Button variant="link" className="p-0 h-auto text-sm text-muted-foreground hover:text-primary">
               الشروط والأحكام
             </Button>

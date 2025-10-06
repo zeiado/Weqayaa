@@ -68,7 +68,7 @@ export const Header = ({
             )}
           </div>
           
-          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <ThemeToggle />
             {onLogin ? (
               <NavigationMenu 
@@ -83,16 +83,16 @@ export const Header = ({
                   onNavigate={onNavigate || (() => {})}
                 />
                 
-                {/* Mobile: Show only essential buttons */}
-                <div className="hidden sm:flex items-center gap-2">
+                {/* Desktop: Show all buttons */}
+                <div className="hidden sm:flex items-center gap-1">
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="relative"
+                    className="relative w-9 h-9"
                     onClick={() => setShowNotifications(!showNotifications)}
                   >
-                    <Bell className="w-5 h-5" />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full"></div>
+                    <Bell className="w-4 h-4" />
+                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-secondary rounded-full"></div>
                   </Button>
                   
                   {onOpenChat && (
@@ -100,8 +100,9 @@ export const Header = ({
                       variant="ghost" 
                       size="icon"
                       onClick={onOpenChat}
+                      className="w-9 h-9"
                     >
-                      <MessageCircle className="w-5 h-5" />
+                      <MessageCircle className="w-4 h-4" />
                     </Button>
                   )}
                   
@@ -110,8 +111,9 @@ export const Header = ({
                       variant="ghost" 
                       size="icon"
                       onClick={onOpenProfile}
+                      className="w-9 h-9"
                     >
-                      <User className="w-5 h-5" />
+                      <User className="w-4 h-4" />
                     </Button>
                   )}
                   
@@ -119,13 +121,13 @@ export const Header = ({
                     variant="ghost" 
                     size="icon"
                     onClick={handleLogout}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 w-9 h-9"
                   >
-                    <LogOut className="w-5 h-5" />
+                    <LogOut className="w-4 h-4" />
                   </Button>
                 </div>
 
-                {/* Mobile: Show only chat and profile buttons */}
+                {/* Mobile: Show only essential buttons */}
                 <div className="flex sm:hidden items-center gap-1">
                   {onOpenChat && (
                     <Button 

@@ -33,32 +33,32 @@ export const HeroSection = ({
         showBackButton={false}
       />
       
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12">
 
         {/* Main Hero Content */}
-        <div className="text-center mb-12 sm:mb-16">
+        <div className="text-center mb-8 sm:mb-12 md:mb-16">
           <WeqayaLogo size="lg" />
           
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mt-6 sm:mt-8 mb-4">
+          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-foreground mt-4 sm:mt-6 md:mt-8 mb-3 sm:mb-4 px-4">
             حمايتك الغذائية الذكية
             <br />
             <span className="text-primary">في الجامعة</span>
           </h2>
           
-          <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-lg mx-auto leading-relaxed px-4">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-4 sm:mb-6 md:mb-8 max-w-lg mx-auto leading-relaxed px-4">
             اكتشف الوجبات الصحية المناسبة لك من قائمة الكافتيريا واحصل على استشارات غذائية ذكية
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 max-w-md sm:max-w-none mx-auto">
             <Button 
-              className="bg-gradient-primary hover:shadow-lg transition-smooth text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-2xl w-full sm:w-auto"
+              className="bg-gradient-primary hover:shadow-lg transition-smooth text-sm sm:text-base md:text-lg px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 rounded-2xl w-full sm:w-auto"
               onClick={onStartRegistration}
             >
               ابدأ رحلة الوقاية المجانية
             </Button>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10 text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-2xl w-full sm:w-auto">
+                <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10 text-sm sm:text-base md:text-lg px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 rounded-2xl w-full sm:w-auto">
                   <Play className="w-4 h-4 ml-2" />
                   شاهد كيف يعمل
                 </Button>

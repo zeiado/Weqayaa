@@ -83,21 +83,23 @@ export const NavigationMenu = ({ onNavigate, onLogin, onRegister }: NavigationMe
 
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         <Button 
           variant="outline" 
           size="sm"
           onClick={onLogin}
-          className="text-primary border-primary/30 hover:bg-primary/10"
+          className="text-primary border-primary/30 hover:bg-primary/10 text-xs sm:text-sm px-2 sm:px-3"
         >
-          تسجيل الدخول
+          <span className="hidden sm:inline">تسجيل الدخول</span>
+          <span className="sm:hidden">دخول</span>
         </Button>
         <Button 
           size="sm"
           onClick={onRegister}
-          className="bg-gradient-primary hover:shadow-lg"
+          className="bg-gradient-primary hover:shadow-lg text-xs sm:text-sm px-2 sm:px-3"
         >
-          إنشاء حساب
+          <span className="hidden sm:inline">إنشاء حساب</span>
+          <span className="sm:hidden">حساب</span>
         </Button>
       </div>
     );
@@ -119,7 +121,7 @@ export const NavigationMenu = ({ onNavigate, onLogin, onRegister }: NavigationMe
       
       <DropdownMenuContent 
         align="end" 
-        className="w-64 p-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-border shadow-xl"
+        className="w-64 sm:w-72 p-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-border shadow-xl"
       >
         {navigationItems.map((item, index) => {
           const Icon = item.icon;
